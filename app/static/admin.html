@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin - Online Judge System</title>
+    <meta id="page-description" name="description" content="Manage problems, test cases, and user roles from a dedicated admin page." />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="admin">
+    <div class="app-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="ambient-grid"></div>
+      <header class="site-header">
+        <a class="brand" href="/">
+          <span class="brand-mark">&lt;/&gt;</span>
+          <span class="brand-copy">
+            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
+            <strong data-i18n="nav.brand">Online Judge System</strong>
+          </span>
+        </a>
+        <nav class="site-nav">
+          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
+          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
+          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
+          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
+          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
+          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
+        </nav>
+        <div class="header-tools">
+          <label class="language-picker">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" aria-label="Language"></select>
+          </label>
+          <div class="session-panel">
+            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+            <div class="session-copy">
+              <strong id="session-name" data-i18n="session.guest">Guest</strong>
+              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
+            </div>
+            <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
+            <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-layout">
+        <section class="page-hero surface narrow">
+          <p class="eyebrow" data-i18n="adminPage.eyebrow">Admin workspace</p>
+          <h1 data-i18n="adminPage.title">Management deserves its own page too.</h1>
+          <p data-i18n="adminPage.text">Create public problems, add test cases, and manage user roles from a focused admin-only workspace.</p>
+        </section>
+
+        <section class="panel surface" id="admin-gate">
+          <div class="panel-heading">
+            <p class="eyebrow" data-i18n="adminPage.accessEyebrow">Access</p>
+            <h2 data-i18n="adminPage.accessTitle">Admin access check</h2>
+          </div>
+          <p class="feedback" id="admin-gate-message"></p>
+        </section>
+
+        <section class="content-grid half-half">
+          <article class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow" data-i18n="adminPage.problemEyebrow">Problem creation</p>
+              <h2 data-i18n="adminPage.problemTitle">Create a public problem</h2>
+            </div>
+            <form class="stack-form" id="problem-create-form">
+              <label>
+                <span data-i18n="adminPage.problemName">Title</span>
+                <input type="text" name="title" required />
+              </label>
+              <label>
+                <span data-i18n="adminPage.problemSlug">Slug</span>
+                <input type="text" name="slug" required />
+              </label>
+              <label>
+                <span data-i18n="problems.difficulty">Difficulty</span>
+                <select name="difficulty">
+                  <option value="easy" data-i18n="difficulty.easy">Easy</option>
+                  <option value="medium" data-i18n="difficulty.medium">Medium</option>
+                  <option value="hard" data-i18n="difficulty.hard">Hard</option>
+                </select>
+              </label>
+              <div class="inline-grid">
+                <label>
+                  <span data-i18n="statement.timeLimit">Time limit</span>
+                  <input type="number" name="time_limit_ms" value="2000" min="100" max="30000" />
+                </label>
+                <label>
+                  <span data-i18n="statement.memoryLimit">Memory limit</span>
+                  <input type="number" name="memory_limit_kb" value="262144" min="4096" max="1048576" />
+                </label>
+              </div>
+              <label>
+                <span data-i18n="statement.description">Description</span>
+                <textarea name="description" rows="5" required></textarea>
+              </label>
+              <label>
+                <span data-i18n="statement.input">Input</span>
+                <textarea name="input_description" rows="3"></textarea>
+              </label>
+              <label>
+                <span data-i18n="statement.output">Output</span>
+                <textarea name="output_description" rows="3"></textarea>
+              </label>
+              <div class="inline-grid">
+                <label>
+                  <span data-i18n="statement.sampleInput">Sample input</span>
+                  <textarea name="sample_input" rows="3"></textarea>
+                </label>
+                <label>
+                  <span data-i18n="statement.sampleOutput">Sample output</span>
+                  <textarea name="sample_output" rows="3"></textarea>
+                </label>
+              </div>
+              <label class="checkbox-row">
+                <input type="checkbox" name="is_public" checked />
+                <span data-i18n="adminPage.problemPublic">Make problem public immediately</span>
+              </label>
+              <button class="primary-button" type="submit" data-i18n="adminPage.createProblem">Create problem</button>
+            </form>
+            <p class="feedback" id="problem-create-feedback"></p>
+          </article>
+
+          <article class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow" data-i18n="adminPage.testCaseEyebrow">Test cases</p>
+              <h2 data-i18n="adminPage.testCaseTitle">Attach a test case</h2>
+            </div>
+            <form class="stack-form" id="test-case-form">
+              <label>
+                <span data-i18n="adminPage.problemSlug">Problem slug</span>
+                <input type="text" name="problem_slug" required />
+              </label>
+              <label>
+                <span data-i18n="statement.input">Input</span>
+                <textarea name="input" rows="4" required></textarea>
+              </label>
+              <label>
+                <span data-i18n="statement.output">Output</span>
+                <textarea name="expected_output" rows="4" required></textarea>
+              </label>
+              <div class="inline-grid">
+                <label>
+                  <span data-i18n="adminPage.testOrder">Order</span>
+                  <input type="number" name="order" value="0" min="0" />
+                </label>
+                <label class="checkbox-row top-gap">
+                  <input type="checkbox" name="is_sample" />
+                  <span data-i18n="adminPage.testSample">Mark as sample</span>
+                </label>
+              </div>
+              <button class="primary-button" type="submit" data-i18n="adminPage.createTestCase">Create test case</button>
+            </form>
+            <p class="feedback" id="test-case-feedback"></p>
+          </article>
+        </section>
+
+        <section class="panel surface">
+          <div class="panel-heading split">
+            <div>
+              <p class="eyebrow" data-i18n="adminPage.usersEyebrow">User management</p>
+              <h2 data-i18n="adminPage.usersTitle">Promote or demote roles</h2>
+            </div>
+            <button class="secondary-button compact" id="refresh-users" type="button" data-i18n="common.refresh">Refresh</button>
+          </div>
+          <div class="stack-list" id="admin-user-list"></div>
+          <p class="feedback" id="admin-user-feedback"></p>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

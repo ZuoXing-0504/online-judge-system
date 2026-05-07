@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Problem Detail - Online Judge System</title>
+    <meta id="page-description" name="description" content="Read a single problem statement on a dedicated page." />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="problem-detail">
+    <div class="app-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="ambient-grid"></div>
+      <header class="site-header">
+        <a class="brand" href="/">
+          <span class="brand-mark">&lt;/&gt;</span>
+          <span class="brand-copy">
+            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
+            <strong data-i18n="nav.brand">Online Judge System</strong>
+          </span>
+        </a>
+        <nav class="site-nav">
+          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
+          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
+          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
+          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
+          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
+          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
+        </nav>
+        <div class="header-tools">
+          <label class="language-picker">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" aria-label="Language"></select>
+          </label>
+          <div class="session-panel">
+            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+            <div class="session-copy">
+              <strong id="session-name" data-i18n="session.guest">Guest</strong>
+              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
+            </div>
+            <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
+            <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-layout">
+        <section class="page-hero surface narrow">
+          <p class="eyebrow" data-i18n="problemPage.eyebrow">Statement</p>
+          <h1 id="problem-title" data-i18n="problemPage.placeholderTitle">Choose a problem from the archive.</h1>
+          <p id="problem-intro" data-i18n="problemPage.text">This page focuses only on the statement and the metadata that matter before coding.</p>
+          <div class="hero-actions">
+            <a class="secondary-button" href="/problems" data-i18n="problemPage.back">Back to problems</a>
+            <a class="primary-button" id="problem-to-submit" href="/submit" data-i18n="problemPage.submit">Solve this problem</a>
+          </div>
+        </section>
+
+        <section class="content-grid two-one">
+          <article class="panel surface">
+            <div class="badge-row">
+              <span class="status-chip neutral" id="problem-difficulty-pill" data-i18n="problemPage.noSelection">No selection</span>
+              <span class="status-chip neutral" id="problem-slug-pill" data-i18n="problemPage.slugNone">slug: none</span>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <span data-i18n="statement.timeLimit">Time limit</span>
+                <strong id="problem-time-limit">--</strong>
+              </div>
+              <div class="stat-card">
+                <span data-i18n="statement.memoryLimit">Memory limit</span>
+                <strong id="problem-memory-limit">--</strong>
+              </div>
+              <div class="stat-card">
+                <span data-i18n="statement.visibility">Visibility</span>
+                <strong id="problem-visibility">--</strong>
+              </div>
+            </div>
+
+            <div class="detail-grid">
+              <section class="detail-block">
+                <h2 data-i18n="statement.description">Description</h2>
+                <pre class="content-block" id="problem-description" data-i18n="problemPage.placeholderBody">Open a problem to load its statement.</pre>
+              </section>
+              <section class="detail-block">
+                <h2 data-i18n="statement.input">Input</h2>
+                <pre class="content-block" id="problem-input" data-i18n="problemPage.placeholderBody">Open a problem to load its statement.</pre>
+                <h2 data-i18n="statement.output">Output</h2>
+                <pre class="content-block" id="problem-output" data-i18n="problemPage.placeholderBody">Open a problem to load its statement.</pre>
+              </section>
+            </div>
+
+            <div class="detail-grid">
+              <section class="detail-block">
+                <h2 data-i18n="statement.sampleInput">Sample input</h2>
+                <pre class="content-block" id="problem-sample-input">--</pre>
+              </section>
+              <section class="detail-block">
+                <h2 data-i18n="statement.sampleOutput">Sample output</h2>
+                <pre class="content-block" id="problem-sample-output">--</pre>
+              </section>
+            </div>
+          </article>
+
+          <aside class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow" data-i18n="problemPage.sideEyebrow">Next action</p>
+              <h2 data-i18n="problemPage.sideTitle">Stay in one context</h2>
+            </div>
+            <div class="stack-notes">
+              <div class="note-card">
+                <strong data-i18n="problemPage.sideOneTitle">Read first</strong>
+                <p data-i18n="problemPage.sideOneText">Keep statement reading separate from code editing so the page stays calm.</p>
+              </div>
+              <div class="note-card">
+                <strong data-i18n="problemPage.sideTwoTitle">Submit second</strong>
+                <p data-i18n="problemPage.sideTwoText">Move to the submit page only when you are ready to code.</p>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

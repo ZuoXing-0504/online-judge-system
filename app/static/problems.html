@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Problems - Online Judge System</title>
+    <meta id="page-description" name="description" content="Browse public problems on a dedicated archive page." />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="problems">
+    <div class="app-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="ambient-grid"></div>
+      <header class="site-header">
+        <a class="brand" href="/">
+          <span class="brand-mark">&lt;/&gt;</span>
+          <span class="brand-copy">
+            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
+            <strong data-i18n="nav.brand">Online Judge System</strong>
+          </span>
+        </a>
+        <nav class="site-nav">
+          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
+          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
+          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
+          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
+          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
+          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
+        </nav>
+        <div class="header-tools">
+          <label class="language-picker">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" aria-label="Language"></select>
+          </label>
+          <div class="session-panel">
+            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+            <div class="session-copy">
+              <strong id="session-name" data-i18n="session.guest">Guest</strong>
+              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
+            </div>
+            <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
+            <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-layout">
+        <section class="page-hero surface narrow">
+          <p class="eyebrow" data-i18n="problemsPage.eyebrow">Problem archive</p>
+          <h1 data-i18n="problemsPage.title">Browse problems on their own page.</h1>
+          <p data-i18n="problemsPage.text">Search, filter, and open statements without mixing editor, login, or verdict panels into the same screen.</p>
+        </section>
+
+        <section class="content-grid two-one">
+          <article class="panel surface">
+            <div class="panel-heading split">
+              <div>
+                <p class="eyebrow" data-i18n="problemsPage.filtersEyebrow">Filters</p>
+                <h2 data-i18n="problemsPage.filtersTitle">Search the public catalog</h2>
+              </div>
+              <button class="secondary-button compact" id="refresh-problems" type="button" data-i18n="common.refresh">Refresh</button>
+            </div>
+            <div class="filter-grid">
+              <label>
+                <span data-i18n="problems.search">Search</span>
+                <input id="problem-search" type="search" data-i18n-placeholder="problems.searchPlaceholder" placeholder="Find by title" />
+              </label>
+              <label>
+                <span data-i18n="problems.difficulty">Difficulty</span>
+                <select id="problem-difficulty">
+                  <option value="" data-i18n="problems.all">All</option>
+                  <option value="easy" data-i18n="difficulty.easy">Easy</option>
+                  <option value="medium" data-i18n="difficulty.medium">Medium</option>
+                  <option value="hard" data-i18n="difficulty.hard">Hard</option>
+                </select>
+              </label>
+            </div>
+            <p class="mini-copy" id="problem-count">0</p>
+            <div class="stack-list" id="problem-list"></div>
+          </article>
+
+          <aside class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow" data-i18n="problemsPage.sideEyebrow">Workflow</p>
+              <h2 data-i18n="problemsPage.sideTitle">Suggested next steps</h2>
+            </div>
+            <div class="stack-notes">
+              <div class="note-card">
+                <strong data-i18n="problemsPage.stepOneTitle">1. Open a statement</strong>
+                <p data-i18n="problemsPage.stepOneText">Click any problem card to move into a dedicated detail page.</p>
+              </div>
+              <div class="note-card">
+                <strong data-i18n="problemsPage.stepTwoTitle">2. Jump to submit</strong>
+                <p data-i18n="problemsPage.stepTwoText">From the detail page, move to the submit page with the slug already filled.</p>
+              </div>
+              <div class="note-card">
+                <strong data-i18n="problemsPage.stepThreeTitle">3. Review verdicts</strong>
+                <p data-i18n="problemsPage.stepThreeText">Use the submissions page to inspect detailed test outcomes.</p>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

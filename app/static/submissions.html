@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Submissions - Online Judge System</title>
+    <meta id="page-description" name="description" content="Inspect submission history and detailed verdicts." />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="submissions">
+    <div class="app-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="ambient-grid"></div>
+      <header class="site-header">
+        <a class="brand" href="/">
+          <span class="brand-mark">&lt;/&gt;</span>
+          <span class="brand-copy">
+            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
+            <strong data-i18n="nav.brand">Online Judge System</strong>
+          </span>
+        </a>
+        <nav class="site-nav">
+          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
+          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
+          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
+          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
+          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
+          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
+        </nav>
+        <div class="header-tools">
+          <label class="language-picker">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" aria-label="Language"></select>
+          </label>
+          <div class="session-panel">
+            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+            <div class="session-copy">
+              <strong id="session-name" data-i18n="session.guest">Guest</strong>
+              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
+            </div>
+            <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
+            <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-layout">
+        <section class="page-hero surface narrow">
+          <p class="eyebrow" data-i18n="submissionsPage.eyebrow">Verdict history</p>
+          <h1 data-i18n="submissionsPage.title">Inspect past runs without clutter from other workflows.</h1>
+          <p data-i18n="submissionsPage.text">This page is only about verdict feeds, live polling, and per-test drilldown.</p>
+        </section>
+
+        <section class="content-grid two-one">
+          <article class="panel surface">
+            <div class="panel-heading split">
+              <div>
+                <p class="eyebrow" data-i18n="submissionsPage.feedEyebrow">Feed</p>
+                <h2 data-i18n="submissionsPage.feedTitle">Recent submissions</h2>
+              </div>
+              <div class="toolbar-actions">
+                <select id="submission-status-filter">
+                  <option value="" data-i18n="submissionsPage.allStatuses">All statuses</option>
+                  <option value="pending" data-i18n="status.pending">Pending</option>
+                  <option value="running" data-i18n="status.running">Running</option>
+                  <option value="accepted" data-i18n="status.accepted">Accepted</option>
+                  <option value="wrong_answer" data-i18n="status.wrong_answer">Wrong answer</option>
+                  <option value="runtime_error" data-i18n="status.runtime_error">Runtime error</option>
+                  <option value="time_limit_exceeded" data-i18n="status.time_limit_exceeded">Time limit exceeded</option>
+                </select>
+                <button class="secondary-button compact" id="refresh-submissions" type="button" data-i18n="common.refresh">Refresh</button>
+              </div>
+            </div>
+            <div class="stack-list" id="submission-list"></div>
+          </article>
+
+          <aside class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow" data-i18n="submissionsPage.detailEyebrow">Detail</p>
+              <h2 id="submission-detail-title" data-i18n="submissionsPage.detailTitle">Pick a submission</h2>
+            </div>
+            <div class="content-block prose-block" id="submission-summary" data-i18n="submissionsPage.detailEmpty">Open a submission from the feed to inspect its summary.</div>
+            <div class="stack-list" id="test-results"></div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

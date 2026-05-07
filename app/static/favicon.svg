@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Online Judge icon">
+  <defs>
+    <linearGradient id="judgeGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0c98b" />
+      <stop offset="55%" stop-color="#ff7b5c" />
+      <stop offset="100%" stop-color="#61d4c9" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#0b1b23" />
+  <rect x="10" y="10" width="108" height="108" rx="22" fill="url(#judgeGradient)" opacity="0.18" />
+  <path
+    d="M43 33 25 64l18 31M85 33l18 31-18 31M55 97l18-66"
+    fill="none"
+    stroke="url(#judgeGradient)"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="10"
+  />
+</svg>
