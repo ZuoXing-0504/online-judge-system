@@ -21,6 +21,8 @@ class ProblemCreate(BaseModel):
     sample_input: Optional[str] = None
     sample_output: Optional[str] = None
     is_public: bool = False
+    solution_code: Optional[str] = None
+    solution_explanation: Optional[str] = None
 
 
 class ProblemUpdate(BaseModel):
@@ -34,6 +36,8 @@ class ProblemUpdate(BaseModel):
     sample_input: Optional[str] = None
     sample_output: Optional[str] = None
     is_public: Optional[bool] = None
+    solution_code: Optional[str] = None
+    solution_explanation: Optional[str] = None
 
 
 class ProblemRead(BaseModel):
@@ -49,6 +53,8 @@ class ProblemRead(BaseModel):
     sample_input: Optional[str] = None
     sample_output: Optional[str] = None
     is_public: bool
+    solution_code: Optional[str] = None
+    solution_explanation: Optional[str] = None
     created_by: uuid.UUID
     created_at: datetime
     updated_at: datetime

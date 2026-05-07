@@ -8,13 +8,13 @@
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
-  <body data-page="submit">
+  <body data-page="submit" data-shell="user">
     <div class="app-shell">
       <div class="ambient ambient-a"></div>
       <div class="ambient ambient-b"></div>
       <div class="ambient-grid"></div>
       <header class="site-header">
-        <a class="brand" href="/">
+        <a class="brand" href="/portal">
           <span class="brand-mark">&lt;/&gt;</span>
           <span class="brand-copy">
             <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
@@ -22,12 +22,10 @@
           </span>
         </a>
         <nav class="site-nav">
-          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
-          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
+          <a data-nav="home" href="/portal" data-i18n="nav.home">Home</a>
           <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
           <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
           <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
-          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
         </nav>
         <div class="header-tools">
           <label class="language-picker">
@@ -40,6 +38,7 @@
               <strong id="session-name" data-i18n="session.guest">Guest</strong>
               <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
             </div>
+            <a class="secondary-button compact hidden" id="admin-entry" href="/admin" data-i18n="session.adminConsole">Admin console</a>
             <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
             <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
           </div>
@@ -49,8 +48,8 @@
       <main class="page-layout">
         <section class="page-hero surface narrow">
           <p class="eyebrow" data-i18n="submitPage.eyebrow">Submission editor</p>
-          <h1 data-i18n="submitPage.title">Code lives on its own page now.</h1>
-          <p data-i18n="submitPage.text">Stay focused on the target slug, your editor, and the queueing result instead of juggling every other panel.</p>
+          <h1 data-i18n="submitPage.title">Python submission workspace</h1>
+          <p data-i18n="submitPage.text">Submit Python 3 solutions, monitor queue status, and review the latest verdict without leaving this workspace.</p>
         </section>
 
         <section class="content-grid two-one">
@@ -66,10 +65,10 @@
               <span data-i18n="editor.problemSlug">Problem slug</span>
               <input id="manual-problem-slug" type="text" data-i18n-placeholder="editor.problemSlugPlaceholder" placeholder="Enter a problem slug" />
             </label>
-            <label class="editor-stack">
+            <div class="editor-stack">
               <span data-i18n="editor.codeEditor">Code editor</span>
-              <textarea id="code-editor" spellcheck="false"></textarea>
-            </label>
+              <textarea id="code-editor" spellcheck="false" style="display:block;width:100%;min-height:420px;padding:16px;border-radius:var(--radius-lg);background:var(--input-bg);color:var(--text);font-family:monospace;border:1px solid var(--border);resize:vertical;line-height:1.7;font-size:0.95rem;">print("Ready to judge")</textarea>
+            </div>
             <div class="toolbar-row">
               <span class="mini-copy" id="editor-hint" data-i18n="editor.loginHint">Login to unlock submissions.</span>
               <div class="toolbar-actions">
@@ -91,6 +90,7 @@
       </main>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script type="module" src="/static/editor.js"></script>
+    <script type="module" src="/static/js/app.js"></script>
   </body>
 </html>

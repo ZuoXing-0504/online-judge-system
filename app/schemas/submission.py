@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class SubmissionCreate(BaseModel):
     problem_slug: str
     code: str = Field(min_length=1, max_length=65536)
-    language: str = "python"
+    language: Literal["python"] = "python"
 
 
 class SubmissionList(BaseModel):

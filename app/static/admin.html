@@ -8,27 +8,28 @@
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
-  <body data-page="admin">
-    <div class="app-shell">
+  <body data-page="admin" data-shell="admin">
+    <div class="app-shell admin-shell">
       <div class="ambient ambient-a"></div>
       <div class="ambient ambient-b"></div>
       <div class="ambient-grid"></div>
+
       <header class="site-header">
-        <a class="brand" href="/">
+        <a class="brand" href="/admin">
           <span class="brand-mark">&lt;/&gt;</span>
           <span class="brand-copy">
-            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
-            <strong data-i18n="nav.brand">Online Judge System</strong>
+            <span class="eyebrow" data-i18n="adminPage.eyebrow">Administration</span>
+            <strong data-i18n="adminPage.title">Administration console</strong>
           </span>
         </a>
+
         <nav class="site-nav">
-          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
-          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
-          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
-          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
-          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
-          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
+          <a data-nav="admin" href="/admin" data-i18n="adminNav.overview">Console</a>
+          <a href="#problem-management" data-i18n="adminNav.problemOps">Problem ops</a>
+          <a href="#user-management" data-i18n="adminNav.userRoles">User roles</a>
+          <a href="/portal" data-i18n="adminNav.portal">User portal</a>
         </nav>
+
         <div class="header-tools">
           <label class="language-picker">
             <span data-i18n="nav.language">Language</span>
@@ -38,7 +39,7 @@
             <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
             <div class="session-copy">
               <strong id="session-name" data-i18n="session.guest">Guest</strong>
-              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
+              <span id="session-role" data-i18n="session.guestHint">Sign in to access the platform.</span>
             </div>
             <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
             <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
@@ -47,13 +48,25 @@
       </header>
 
       <main class="page-layout">
-        <section class="page-hero surface narrow">
-          <p class="eyebrow" data-i18n="adminPage.eyebrow">Admin workspace</p>
-          <h1 data-i18n="adminPage.title">Management deserves its own page too.</h1>
-          <p data-i18n="adminPage.text">Create public problems, add test cases, and manage user roles from a focused admin-only workspace.</p>
+        <section class="hero-panel surface admin-hero">
+          <div class="hero-copy">
+            <p class="eyebrow" data-i18n="adminPage.eyebrow">Administration</p>
+            <h1 data-i18n="adminPage.title">Administration console</h1>
+            <p class="hero-text" data-i18n="adminPage.text">A separate management workspace for problem operations, test case maintenance, and role control.</p>
+          </div>
+          <div class="stack-notes">
+            <article class="note-card">
+              <strong data-i18n="adminNav.problemOps">Problem ops</strong>
+              <p data-i18n="adminPage.problemNote">Problem metadata, statement content, and test case maintenance stay in the management area.</p>
+            </article>
+            <article class="note-card">
+              <strong data-i18n="adminNav.userRoles">User roles</strong>
+              <p data-i18n="adminPage.usersNote">Administrative privileges and role transitions are handled independently from the user workspace.</p>
+            </article>
+          </div>
         </section>
 
-        <section class="panel surface" id="admin-gate">
+        <section class="panel surface" id="admin-overview">
           <div class="panel-heading">
             <p class="eyebrow" data-i18n="adminPage.accessEyebrow">Access</p>
             <h2 data-i18n="adminPage.accessTitle">Admin access check</h2>
@@ -61,7 +74,7 @@
           <p class="feedback" id="admin-gate-message"></p>
         </section>
 
-        <section class="content-grid half-half">
+        <section class="content-grid half-half" id="problem-management">
           <article class="panel surface">
             <div class="panel-heading">
               <p class="eyebrow" data-i18n="adminPage.problemEyebrow">Problem creation</p>
@@ -159,7 +172,7 @@
           </article>
         </section>
 
-        <section class="panel surface">
+        <section class="panel surface" id="user-management">
           <div class="panel-heading split">
             <div>
               <p class="eyebrow" data-i18n="adminPage.usersEyebrow">User management</p>
@@ -173,6 +186,6 @@
       </main>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script type="module" src="/static/js/app.js"></script>
   </body>
 </html>

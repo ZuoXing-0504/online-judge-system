@@ -97,3 +97,29 @@ async def test_get_nonexistent_submission(client: AsyncClient, user_token: str):
         headers={"Authorization": f"Bearer {user_token}"},
     )
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_submit_rejects_unsupported_language(client: AsyncClient, admin_token: str, user_token: str):
+    await client.post(
+        "/api/v1/problems",
+        json={
+            "title": "Python Only",
+            "slug": "python-only",
+            "description": "Language boundary test",
+            "difficulty": "easy",
+            "is_public": True,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+
+    response = await client.post(
+        "/api/v1/submissions",
+        json={
+            "problem_slug": "python-only",
+            "code": "print(1)",
+            "language": "java",
+        },
+        headers={"Authorization": f"Bearer {user_token}"},
+    )
+    assert response.status_code == 422

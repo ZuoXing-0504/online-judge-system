@@ -9,56 +9,47 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body data-page="auth">
-    <div class="app-shell">
+    <div class="app-shell auth-shell">
       <div class="ambient ambient-a"></div>
       <div class="ambient ambient-b"></div>
       <div class="ambient-grid"></div>
-      <header class="site-header">
-        <a class="brand" href="/">
-          <span class="brand-mark">&lt;/&gt;</span>
-          <span class="brand-copy">
-            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
-            <strong data-i18n="nav.brand">Online Judge System</strong>
-          </span>
-        </a>
-        <nav class="site-nav">
-          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
-          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
-          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
-          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
-          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
-          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
-        </nav>
-        <div class="header-tools">
-          <label class="language-picker">
-            <span data-i18n="nav.language">Language</span>
-            <select id="language-select" aria-label="Language"></select>
-          </label>
-          <div class="session-panel">
-            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
-            <div class="session-copy">
-              <strong id="session-name" data-i18n="session.guest">Guest</strong>
-              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
-            </div>
-            <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
-            <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
-          </div>
-        </div>
-      </header>
 
-      <main class="page-layout">
-        <section class="page-hero surface narrow">
-          <p class="eyebrow" data-i18n="authPage.eyebrow">Identity</p>
-          <h1 data-i18n="authPage.title">Use a dedicated page for account work.</h1>
-          <p data-i18n="authPage.text">Register once, log in cleanly, and keep the rest of the product focused on actual judging workflows.</p>
+      <main class="auth-layout">
+        <section class="auth-intro">
+          <a class="brand auth-brand" href="/">
+            <span class="brand-mark">&lt;/&gt;</span>
+            <span class="brand-copy">
+              <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
+              <strong data-i18n="nav.brand">Online Judge System</strong>
+            </span>
+          </a>
+
+          <div class="auth-intro-copy">
+            <p class="eyebrow" data-i18n="authPage.eyebrow">Identity</p>
+            <h1 data-i18n="authPage.title">Use a dedicated page for account work.</h1>
+            <p class="hero-text" data-i18n="authPage.text">Register once, log in cleanly, and keep the rest of the product focused on actual judging workflows.</p>
+          </div>
+
+          <div class="auth-toolbar surface">
+            <label class="language-picker">
+              <span data-i18n="nav.language">Language</span>
+              <select id="language-select" aria-label="Language"></select>
+            </label>
+            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+          </div>
         </section>
 
-        <section class="content-grid half-half">
-          <article class="panel surface">
-            <div class="panel-heading">
+        <section class="auth-panel surface auth-login-stage">
+          <div class="auth-panel-header">
+            <div>
               <p class="eyebrow" data-i18n="authPage.loginEyebrow">Login</p>
               <h2 data-i18n="authPage.loginTitle">Sign in to your workspace</h2>
+              <p class="mini-copy" data-i18n="authPage.loginNote">Use your account to enter the user portal or the admin console.</p>
             </div>
+            <p class="feedback" id="auth-feedback"></p>
+          </div>
+
+          <article class="auth-card auth-login-card">
             <form class="stack-form" id="login-form">
               <label>
                 <span data-i18n="auth.username">Username</span>
@@ -68,43 +59,16 @@
                 <span data-i18n="auth.password">Password</span>
                 <input type="password" name="password" autocomplete="current-password" required />
               </label>
-              <button class="primary-button" type="submit" data-i18n="auth.loginAction">Login</button>
+              <div class="auth-actions">
+                <button class="primary-button" type="submit" data-i18n="auth.loginAction">Login</button>
+                <button class="secondary-button" id="open-register" type="button" data-i18n="authPage.openRegister">Create account</button>
+              </div>
             </form>
           </article>
-
-          <article class="panel surface">
-            <div class="panel-heading">
-              <p class="eyebrow" data-i18n="authPage.registerEyebrow">Register</p>
-              <h2 data-i18n="authPage.registerTitle">Create a new account</h2>
-            </div>
-            <form class="stack-form" id="register-form">
-              <label>
-                <span data-i18n="auth.username">Username</span>
-                <input type="text" name="username" minlength="3" maxlength="50" required />
-              </label>
-              <label>
-                <span data-i18n="auth.email">Email</span>
-                <input type="email" name="email" autocomplete="email" required />
-              </label>
-              <label>
-                <span data-i18n="auth.password">Password</span>
-                <input type="password" name="password" minlength="8" maxlength="128" required />
-              </label>
-              <button class="primary-button" type="submit" data-i18n="auth.registerAction">Create account</button>
-            </form>
-          </article>
-        </section>
-
-        <section class="panel surface">
-          <div class="panel-heading">
-            <p class="eyebrow" data-i18n="authPage.feedbackEyebrow">Status</p>
-            <h2 data-i18n="authPage.feedbackTitle">Session feedback</h2>
-          </div>
-          <p class="feedback" id="auth-feedback"></p>
         </section>
       </main>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script type="module" src="/static/js/app.js"></script>
   </body>
 </html>

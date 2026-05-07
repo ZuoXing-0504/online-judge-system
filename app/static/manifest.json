@@ -1,0 +1,16 @@
+{
+  "name": "Online Judge System",
+  "short_name": "OJ",
+  "description": "A multi-page online judge for browsing problems, submitting solutions, and reviewing verdicts.",
+  "start_url": "/portal",
+  "display": "standalone",
+  "background_color": "#07131b",
+  "theme_color": "#62d4ca",
+  "icons": [
+    {
+      "src": "/static/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

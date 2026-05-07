@@ -1,13 +1,15 @@
+import asyncio
+import json
 import uuid
 
-from arq import create_pool
-from arq.connections import RedisSettings
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
+from app.core.rate_limit import limiter
+from app.core.redis import get_redis_pool
 from app.models.submission import Submission
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
@@ -74,7 +76,9 @@ def _build_detail(sub: Submission) -> SubmissionDetail:
 
 
 @router.post("", response_model=SubmissionCreateResponse, status_code=202)
+@limiter.limit("30/minute")
 async def submit_code(
+    request: Request,
     data: SubmissionCreate,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
@@ -82,9 +86,7 @@ async def submit_code(
     submission = await submission_service.create_submission(
         db, user, data.problem_slug, data.code, data.language,
     )
-    redis_pool = await create_pool(RedisSettings(
-        host=settings.redis_host, port=settings.redis_port,
-    ))
+    redis_pool = await get_redis_pool()
     await redis_pool.enqueue_job("judge_job", str(submission.id))
     return submission
 
@@ -98,9 +100,7 @@ async def list_submissions(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    is_admin = False
-    if user and user.role == "admin":
-        is_admin = True
+    is_admin = user.role == "admin"
 
     subs, total = await submission_service.list_submissions(
         db, user, page=page, page_size=page_size,
@@ -121,3 +121,36 @@ async def get_submission(
 ):
     sub = await submission_service.get_submission(db, submission_id, user)
     return _build_detail(sub)
+
+
+@router.websocket("/{submission_id}/ws")
+async def submission_status_ws(
+    websocket: WebSocket,
+    submission_id: uuid.UUID,
+):
+    await websocket.accept()
+
+    from app.core.database import async_session_factory
+
+    for _ in range(120):
+        try:
+            async with async_session_factory() as db:
+                sub = await submission_service.get_submission_raw(db, submission_id)
+                if sub is None:
+                    await websocket.send_json({"error": "Submission not found"})
+                    return
+
+                detail = _build_detail(sub)
+                await websocket.send_json(
+                    json.loads(detail.model_dump_json())
+                )
+
+                if sub.status not in ("pending", "running"):
+                    return
+
+            await asyncio.sleep(1)
+        except WebSocketDisconnect:
+            return
+        except Exception:
+            await asyncio.sleep(1)
+

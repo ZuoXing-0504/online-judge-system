@@ -1,24 +1,25 @@
 :root {
-  --bg: #07131b;
-  --bg-alt: #0e1f28;
-  --panel: rgba(8, 22, 30, 0.78);
-  --panel-strong: rgba(11, 29, 40, 0.92);
-  --border: rgba(143, 192, 200, 0.16);
-  --text: #eaf6f5;
-  --muted: #9bb7b7;
-  --teal: #62d4ca;
-  --teal-deep: #158d85;
-  --sand: #f2c98c;
-  --ember: #ff7c5e;
-  --gold: #ffbb61;
-  --success: #5ce0a0;
-  --warning: #ffcf78;
-  --danger: #ff8f8f;
-  --shadow: 0 26px 74px rgba(0, 0, 0, 0.34);
-  --radius-xl: 28px;
-  --radius-lg: 22px;
-  --radius-md: 16px;
-  --radius-sm: 12px;
+  --bg: #f7fafc;
+  --bg-alt: #eef3f6;
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel-strong: rgba(255, 255, 255, 0.94);
+  --border: rgba(148, 176, 186, 0.28);
+  --text: #23343e;
+  --muted: #5d7787;
+  --teal: #1a8c84;
+  --teal-deep: #0f6e67;
+  --sand: #c8832e;
+  --ember: #d9553a;
+  --gold: #c18028;
+  --success: #38a066;
+  --warning: #d49b3a;
+  --danger: #d94a4a;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.07);
+  --input-bg: rgba(255, 255, 255, 0.88);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
   --heading-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --body-font: "Aptos", "Trebuchet MS", "Segoe UI Variable", "Noto Sans", sans-serif;
 }
@@ -35,10 +36,10 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 12% 12%, rgba(98, 212, 202, 0.18), transparent 34%),
-    radial-gradient(circle at 82% 18%, rgba(255, 124, 94, 0.16), transparent 28%),
-    radial-gradient(circle at 68% 80%, rgba(242, 201, 140, 0.12), transparent 28%),
-    linear-gradient(145deg, #061118 0%, #0c1d27 45%, #112a33 100%);
+    radial-gradient(circle at 10% 10%, rgba(26, 140, 132, 0.06), transparent 38%),
+    radial-gradient(circle at 80% 20%, rgba(217, 85, 58, 0.04), transparent 32%),
+    radial-gradient(circle at 65% 80%, rgba(200, 131, 46, 0.04), transparent 32%),
+    linear-gradient(155deg, #f2f6f9 0%, #eaf1f5 40%, #e5edf2 100%);
   color: var(--text);
   font-family: var(--body-font);
 }
@@ -78,24 +79,24 @@ select {
 
 .ambient-a {
   background:
-    radial-gradient(circle at 22% 24%, rgba(98, 212, 202, 0.2), transparent 0 26%),
-    radial-gradient(circle at 82% 14%, rgba(255, 187, 97, 0.14), transparent 0 20%);
+    radial-gradient(circle at 22% 24%, rgba(26, 140, 132, 0.1), transparent 0 26%),
+    radial-gradient(circle at 82% 14%, rgba(193, 128, 40, 0.07), transparent 0 20%);
   filter: blur(44px);
 }
 
 .ambient-b {
   background:
-    radial-gradient(circle at 68% 78%, rgba(255, 124, 94, 0.12), transparent 0 22%),
-    radial-gradient(circle at 12% 82%, rgba(98, 212, 202, 0.14), transparent 0 24%);
+    radial-gradient(circle at 68% 78%, rgba(217, 85, 58, 0.06), transparent 0 22%),
+    radial-gradient(circle at 12% 82%, rgba(26, 140, 132, 0.07), transparent 0 24%);
   filter: blur(58px);
 }
 
 .ambient-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
   background-size: 72px 72px;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), transparent 94%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent 94%);
 }
 
 .site-header,
@@ -174,9 +175,9 @@ select {
 
 .site-nav a:hover,
 .site-nav a.active {
-  color: var(--text);
-  border-color: rgba(98, 212, 202, 0.24);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--teal);
+  border-color: rgba(26, 140, 132, 0.18);
+  background: rgba(26, 140, 132, 0.06);
   transform: translateY(-1px);
 }
 
@@ -218,7 +219,7 @@ select {
 
 .surface {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5)),
     var(--panel);
   backdrop-filter: blur(24px);
   box-shadow: var(--shadow);
@@ -231,7 +232,8 @@ select {
   min-width: 280px;
   padding: 10px 12px;
   border-radius: 18px;
-  background: rgba(8, 22, 30, 0.8);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
 }
 
 .session-copy {
@@ -255,6 +257,135 @@ select {
   display: grid;
   gap: 22px;
   padding: 0 clamp(18px, 4vw, 46px) 40px;
+}
+
+.auth-shell {
+  min-height: 100vh;
+}
+
+.auth-layout {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.94fr) minmax(360px, 1.06fr);
+  gap: 24px;
+  align-items: stretch;
+  padding: clamp(18px, 4vw, 42px);
+}
+
+.auth-intro,
+.auth-panel {
+  border-radius: var(--radius-xl);
+}
+
+.auth-intro {
+  display: grid;
+  align-content: space-between;
+  gap: 28px;
+  padding: clamp(22px, 4vw, 36px);
+}
+
+.auth-brand {
+  width: fit-content;
+}
+
+.auth-intro-copy {
+  max-width: 560px;
+}
+
+.auth-intro-copy h1 {
+  margin: 10px 0 14px;
+  font-size: clamp(2.3rem, 4vw, 4.1rem);
+  line-height: 0.98;
+}
+
+.auth-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.auth-panel {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  padding: clamp(22px, 4vw, 34px);
+}
+
+.auth-panel-header {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-panel-header h2 {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+}
+
+.auth-forms-grid {
+  gap: 18px;
+}
+
+.auth-card {
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border);
+}
+
+.auth-login-stage {
+  max-width: 760px;
+  justify-self: end;
+}
+
+.register-layout {
+  grid-template-columns: minmax(300px, 0.86fr) minmax(360px, 0.94fr);
+}
+
+.register-stage {
+  max-width: 720px;
+  justify-self: end;
+}
+
+.auth-login-card {
+  padding: 28px;
+  background:
+    linear-gradient(180deg, rgba(26, 140, 132, 0.06), rgba(255, 255, 255, 0.5)),
+    rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border);
+}
+
+.auth-register-card {
+  padding: 26px;
+  background:
+    linear-gradient(180deg, rgba(193, 128, 40, 0.06), rgba(255, 255, 255, 0.5)),
+    rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border);
+}
+
+.auth-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-shell .brand-mark {
+  background: linear-gradient(145deg, rgba(255, 187, 97, 0.98), rgba(255, 124, 94, 0.92));
+}
+
+.admin-shell .site-nav a:hover,
+.admin-shell .site-nav a.active {
+  border-color: rgba(255, 187, 97, 0.28);
+  background: rgba(255, 187, 97, 0.08);
+}
+
+.admin-shell .note-card {
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .hero-panel,
@@ -319,7 +450,7 @@ select {
 .test-card,
 .user-card {
   border-radius: var(--radius-lg);
-  background: rgba(6, 18, 24, 0.52);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .metric-card,
@@ -404,8 +535,8 @@ select {
 .submission-card:hover,
 .user-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(98, 212, 202, 0.24);
-  background: rgba(10, 27, 36, 0.78);
+  border-color: rgba(26, 140, 132, 0.22);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .quick-link strong,
@@ -441,8 +572,8 @@ select {
   width: 100%;
   padding: 14px 15px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(3, 13, 18, 0.82);
+  border: 1px solid rgba(148, 176, 186, 0.4);
+  background: var(--input-bg);
   color: var(--text);
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -451,8 +582,8 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: rgba(98, 212, 202, 0.6);
-  box-shadow: 0 0 0 4px rgba(98, 212, 202, 0.12);
+  border-color: rgba(26, 140, 132, 0.55);
+  box-shadow: 0 0 0 4px rgba(26, 140, 132, 0.1);
   transform: translateY(-1px);
 }
 
@@ -463,8 +594,19 @@ textarea {
   line-height: 1.6;
 }
 
-#code-editor {
+#code-editor,
+.cm-editor-host {
   min-height: 420px;
+}
+
+.cm-editor-host {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--input-bg);
+}
+
+.cm-editor-host:not(.cm-ready) {
+  border: 1px solid var(--border);
 }
 
 .inline-grid {
@@ -599,8 +741,8 @@ textarea {
   margin: 0;
   padding: 16px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(4, 14, 18, 0.66);
+  border: 1px solid var(--border);
+  background: var(--input-bg);
   white-space: pre-wrap;
   word-break: break-word;
   font-family: "Cascadia Code", "Consolas", "Lucida Console", monospace;
@@ -608,6 +750,19 @@ textarea {
 
 .prose-block {
   font-family: var(--body-font);
+}
+
+.problem-num {
+  display: inline-block;
+  min-width: 2em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-right: 4px;
+  text-align: center;
 }
 
 .problem-card,
@@ -619,8 +774,8 @@ textarea {
 .problem-card.active,
 .submission-card.active,
 .user-card.active {
-  border-color: rgba(98, 212, 202, 0.3);
-  background: rgba(10, 27, 36, 0.84);
+  border-color: rgba(26, 140, 132, 0.25);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .meta-row {
@@ -643,16 +798,125 @@ textarea {
   color: #ffbbbb;
 }
 
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 420px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  pointer-events: auto;
+  animation: toastIn 0.28s ease-out, toastOut 0.22s ease-in 2.7s forwards;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.38);
+}
+
+.toast.success {
+  background: rgba(16, 48, 32, 0.96);
+  border: 1px solid rgba(92, 224, 160, 0.32);
+  color: #b8f7d7;
+}
+
+.toast.error {
+  background: rgba(48, 16, 16, 0.96);
+  border: 1px solid rgba(255, 143, 143, 0.32);
+  color: #ffbbbb;
+}
+
+.toast.warning {
+  background: rgba(48, 36, 16, 0.96);
+  border: 1px solid rgba(255, 187, 97, 0.32);
+  color: #ffe3a7;
+}
+
+.toast.info {
+  background: rgba(16, 32, 48, 0.96);
+  border: 1px solid rgba(98, 212, 202, 0.24);
+  color: #b7fbf3;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastOut {
+  to {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
 .hidden {
   display: none !important;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 14px;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 80%;
 }
 
 .empty-state {
   padding: 18px;
   border-radius: var(--radius-lg);
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border: 1px dashed var(--border);
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(148, 176, 186, 0.06);
 }
 
 .checkbox-row {
@@ -698,6 +962,7 @@ html[dir="rtl"] .toolbar-row {
     justify-content: flex-start;
   }
 
+  .auth-layout,
   .hero-panel,
   .content-grid.two-one,
   .content-grid.half-half {
@@ -706,6 +971,36 @@ html[dir="rtl"] .toolbar-row {
 }
 
 @media (max-width: 760px) {
+  .auth-layout {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .auth-intro,
+  .auth-panel {
+    padding: 18px;
+  }
+
+  .auth-intro-copy h1 {
+    font-size: 2.45rem;
+  }
+
+  .auth-toolbar {
+    align-items: stretch;
+  }
+
+  .auth-login-stage {
+    justify-self: stretch;
+  }
+
+  .register-stage {
+    justify-self: stretch;
+  }
+
+  .auth-actions {
+    grid-template-columns: 1fr;
+  }
+
   .page-layout {
     padding: 0 14px 30px;
   }

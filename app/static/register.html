@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register - Online Judge System</title>
+    <meta id="page-description" name="description" content="Create a new account in a dedicated registration page." />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="register">
+    <div class="app-shell auth-shell register-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="ambient-grid"></div>
+
+      <main class="auth-layout register-layout">
+        <section class="auth-intro register-intro">
+          <a class="brand auth-brand" href="/auth">
+            <span class="brand-mark">&lt;/&gt;</span>
+            <span class="brand-copy">
+              <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
+              <strong data-i18n="nav.brand">Online Judge System</strong>
+            </span>
+          </a>
+
+          <div class="auth-intro-copy">
+            <p class="eyebrow" data-i18n="authPage.registerEyebrow">Register</p>
+            <h1 data-i18n="registerPage.title">Create a new account</h1>
+            <p class="hero-text" data-i18n="registerPage.text">Registration runs in a separate page so the main sign-in page can stay focused on login.</p>
+          </div>
+
+          <div class="auth-toolbar surface">
+            <label class="language-picker">
+              <span data-i18n="nav.language">Language</span>
+              <select id="language-select" aria-label="Language"></select>
+            </label>
+            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+          </div>
+        </section>
+
+        <section class="auth-panel surface register-stage">
+          <div class="auth-panel-header">
+            <div>
+              <p class="eyebrow" data-i18n="authPage.registerEyebrow">Register</p>
+              <h2 data-i18n="authPage.registerTitle">Create a new account</h2>
+              <p class="mini-copy" data-i18n="registerPage.note">After the account is created, this page will return you to sign in.</p>
+            </div>
+            <p class="feedback" id="register-feedback"></p>
+          </div>
+
+          <article class="auth-card auth-register-card">
+            <form class="stack-form" id="register-form">
+              <label>
+                <span data-i18n="auth.username">Username</span>
+                <input type="text" name="username" minlength="3" maxlength="50" required />
+              </label>
+              <label>
+                <span data-i18n="auth.email">Email</span>
+                <input type="email" name="email" autocomplete="email" required />
+              </label>
+              <label>
+                <span data-i18n="auth.password">Password</span>
+                <input type="password" name="password" minlength="8" maxlength="128" required />
+              </label>
+              <div class="auth-actions">
+                <button class="primary-button" type="submit" data-i18n="auth.registerAction">Create account</button>
+                <button class="ghost-button" id="close-register-window" type="button" data-i18n="registerPage.backToLogin">Back to sign in</button>
+              </div>
+            </form>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/static/js/app.js"></script>
+  </body>
+</html>

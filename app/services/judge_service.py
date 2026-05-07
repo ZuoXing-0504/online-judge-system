@@ -1,3 +1,4 @@
+import traceback
 import uuid
 
 from sqlalchemy import select
@@ -10,7 +11,7 @@ from app.models.submission_test_result import SubmissionTestResult
 from app.models.test_case import TestCase
 
 
-async def judge_submission(db: AsyncSession, submission_id: uuid.UUID) -> None:
+async def _do_judge(db: AsyncSession, submission_id: uuid.UUID) -> None:
     result = await db.execute(
         select(Submission).where(Submission.id == submission_id)
     )
@@ -84,3 +85,18 @@ async def judge_submission(db: AsyncSession, submission_id: uuid.UUID) -> None:
     submission.max_memory_used_kb = max_mem
     submission.error_message = error_msg
     await db.commit()
+
+
+async def judge_submission(db: AsyncSession, submission_id: uuid.UUID) -> None:
+    try:
+        await _do_judge(db, submission_id)
+    except Exception:
+        await db.rollback()
+        try:
+            submission = await db.get(Submission, submission_id)
+            if submission and submission.status == "running":
+                submission.status = "error"
+                submission.error_message = traceback.format_exc()[-2000:]
+                await db.commit()
+        except Exception:
+            pass

@@ -14,6 +14,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -24,6 +25,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  sandbox-builder:
+    build:
+      context: ./sandbox
+      dockerfile: Dockerfile
+      tags:
+        - "oj-sandbox:latest"
+    image: oj-sandbox:latest
+    command: ["echo", "sandbox image built"]
 
   app:
     build: .
@@ -44,8 +55,22 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      sandbox-builder:
+        condition: service_completed_successfully
     volumes:
       - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 512M
 
   worker:
     build: .
@@ -57,12 +82,23 @@ services:
       SECRET_KEY: dev-secret-key-change-in-production
       PYTHONPATH: /app
     depends_on:
+      app:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      sandbox-builder:
+        condition: service_completed_successfully
     volumes:
       - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 512M
 
 volumes:
   postgres_data:

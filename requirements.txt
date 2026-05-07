@@ -16,3 +16,6 @@ pytest-cov==6.0.0
 python-multipart==0.0.19
 psutil==6.1.1
 email-validator==2.2.0
+slowapi==0.1.9
+prometheus-fastapi-instrumentator==7.0.0
+docker==7.1.0

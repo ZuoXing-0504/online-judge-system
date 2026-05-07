@@ -6,12 +6,8 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.config import settings
+import app.models  # noqa: F401
 from app.models.base import Base
-from app.models.user import User
-from app.models.problem import Problem
-from app.models.test_case import TestCase
-from app.models.submission import Submission
-from app.models.submission_test_result import SubmissionTestResult
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

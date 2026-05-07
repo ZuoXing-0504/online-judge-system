@@ -1,6 +1,5 @@
 import uuid
-
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -10,6 +9,7 @@ from app.schemas.common import PaginatedResponse
 from app.schemas.problem import ProblemCreate, ProblemList, ProblemRead, ProblemUpdate
 from app.schemas.test_case import TestCaseCreate, TestCaseRead, TestCaseUpdate
 from app.services import problem_service
+from app.services.audit_service import create_audit_log
 
 router = APIRouter()
 

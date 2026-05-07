@@ -145,3 +145,93 @@ async def test_delete_problem(client: AsyncClient, admin_token: str):
 
     response = await client.get("/api/v1/problems/to-delete")
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_cannot_update_test_case_through_wrong_problem_slug(client: AsyncClient, admin_token: str):
+    await client.post(
+        "/api/v1/problems",
+        json={
+            "title": "Primary Problem",
+            "slug": "primary-problem",
+            "description": "Owns the test case",
+            "is_public": True,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    await client.post(
+        "/api/v1/problems",
+        json={
+            "title": "Secondary Problem",
+            "slug": "secondary-problem",
+            "description": "Should not reach the other test case",
+            "is_public": True,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    create_response = await client.post(
+        "/api/v1/problems/primary-problem/test-cases",
+        json={
+            "input": "1 2",
+            "expected_output": "3",
+            "is_sample": True,
+            "order": 0,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    test_case_id = create_response.json()["id"]
+
+    response = await client.put(
+        f"/api/v1/problems/secondary-problem/test-cases/{test_case_id}",
+        json={"expected_output": "999"},
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_cannot_delete_test_case_through_wrong_problem_slug(client: AsyncClient, admin_token: str):
+    await client.post(
+        "/api/v1/problems",
+        json={
+            "title": "Delete Owner",
+            "slug": "delete-owner",
+            "description": "Owns the test case",
+            "is_public": True,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    await client.post(
+        "/api/v1/problems",
+        json={
+            "title": "Delete Other",
+            "slug": "delete-other",
+            "description": "Wrong route target",
+            "is_public": True,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    create_response = await client.post(
+        "/api/v1/problems/delete-owner/test-cases",
+        json={
+            "input": "5",
+            "expected_output": "5",
+            "is_sample": False,
+            "order": 1,
+        },
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    test_case_id = create_response.json()["id"]
+
+    response = await client.delete(
+        f"/api/v1/problems/delete-other/test-cases/{test_case_id}",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert response.status_code == 404
+
+    verify_response = await client.get(
+        "/api/v1/problems/delete-owner/test-cases",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert verify_response.status_code == 200
+    assert verify_response.json()["total"] == 1

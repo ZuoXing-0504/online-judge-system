@@ -54,6 +54,19 @@ async def get_submission(db: AsyncSession, submission_id: uuid.UUID, user: User)
     return submission
 
 
+async def get_submission_raw(db: AsyncSession, submission_id: uuid.UUID) -> Submission | None:
+    result = await db.execute(
+        select(Submission)
+        .options(
+            selectinload(Submission.test_results),
+            joinedload(Submission.problem),
+            joinedload(Submission.user),
+        )
+        .where(Submission.id == submission_id)
+    )
+    return result.unique().scalar_one_or_none()
+
+
 async def list_submissions(
     db: AsyncSession,
     user: User,

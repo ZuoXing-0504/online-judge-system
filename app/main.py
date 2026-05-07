@@ -5,11 +5,19 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.router import api_router
 from app.core.config import settings
-from app.core.database import engine, ensure_database_schema
+from app.core.database import engine
 from app.core.exceptions import AppException
+from app.core.logging import RequestIDMiddleware, setup_logging
+from app.core.rate_limit import limiter
+from app.core.redis import close_redis_pool
+from prometheus_fastapi_instrumentator import Instrumentator
+
+setup_logging()
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
@@ -21,8 +29,8 @@ def page_response(filename: str) -> FileResponse:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await ensure_database_schema(engine)
     yield
+    await close_redis_pool()
     await engine.dispose()
 
 
@@ -33,11 +41,18 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+app.add_middleware(RequestIDMiddleware)
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,12 +69,22 @@ async def app_exception_handler(request: Request, exc: AppException):
 
 @app.get("/", include_in_schema=False)
 async def frontend_index():
+    return page_response("auth.html")
+
+
+@app.get("/portal", include_in_schema=False)
+async def frontend_portal():
     return page_response("index.html")
 
 
 @app.get("/auth", include_in_schema=False)
 async def frontend_auth():
     return page_response("auth.html")
+
+
+@app.get("/register", include_in_schema=False)
+async def frontend_register():
+    return page_response("register.html")
 
 
 @app.get("/problems", include_in_schema=False)

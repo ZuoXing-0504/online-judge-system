@@ -1,0 +1,59 @@
+name: Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: judge
+          POSTGRES_PASSWORD: judge_pass
+          POSTGRES_DB: online_judge_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U judge -d online_judge_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://judge:judge_pass@localhost:5432/online_judge_test
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      SECRET_KEY: test-secret-key-ci-environment
+      DEBUG: "false"
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: supercharge/redis-github-action@1.8.0
+        with:
+          redis-image: redis:7-alpine
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Apply migrations
+        run: alembic upgrade head
+
+      - name: Run tests
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=75
+
+      - name: Lint check
+        run: pip install ruff && ruff check app/ --ignore=E501,F401,F841

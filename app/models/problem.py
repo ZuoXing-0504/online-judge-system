@@ -1,6 +1,7 @@
 import uuid
+from datetime import datetime
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +22,9 @@ class Problem(Base, UUIDMixin, TimestampMixin):
     sample_input: Mapped[str | None] = mapped_column(Text, nullable=True)
     sample_output: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    solution_code: Mapped[str | None] = mapped_column(Text, nullable=True)
+    solution_explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, default=None)
     created_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )

@@ -45,9 +45,16 @@ async def list_users(
     return list(result.scalars().all()), total
 
 
-async def change_role(db: AsyncSession, user_id: str, new_role: str) -> User:
+async def change_role(
+    db: AsyncSession,
+    user_id: str,
+    new_role: str,
+    *,
+    commit: bool = True,
+) -> User:
     user = await get_by_id(db, user_id)
     user.role = new_role
-    await db.commit()
-    await db.refresh(user)
+    if commit:
+        await db.commit()
+        await db.refresh(user)
     return user

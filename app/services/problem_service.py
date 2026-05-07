@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,8 +11,11 @@ from app.schemas.problem import ProblemCreate, ProblemUpdate
 from app.schemas.test_case import TestCaseCreate, TestCaseUpdate
 
 
-async def _get_by_slug(db: AsyncSession, slug: str) -> Problem | None:
-    result = await db.execute(select(Problem).where(Problem.slug == slug))
+async def _get_by_slug(db: AsyncSession, slug: str, include_deleted: bool = False) -> Problem | None:
+    query = select(Problem).where(Problem.slug == slug)
+    if not include_deleted:
+        query = query.where(Problem.deleted_at.is_(None))
+    result = await db.execute(query)
     return result.scalar_one_or_none()
 
 
@@ -30,7 +34,7 @@ async def list_problems(
     search: str | None = None,
     is_admin: bool = False,
 ) -> tuple[list[Problem], int]:
-    query = select(Problem)
+    query = select(Problem).where(Problem.deleted_at.is_(None))
     if not is_admin:
         query = query.where(Problem.is_public == True)
     if difficulty:
@@ -71,12 +75,31 @@ async def update_problem(db: AsyncSession, slug: str, data: ProblemUpdate) -> Pr
 
 async def delete_problem(db: AsyncSession, slug: str) -> None:
     problem = await get_by_slug(db, slug)
-    await db.delete(problem)
+    problem.deleted_at = datetime.now(timezone.utc)
+    problem.is_public = False
     await db.commit()
 
 
 async def get_test_case(db: AsyncSession, test_case_id: uuid.UUID) -> TestCase:
     result = await db.execute(select(TestCase).where(TestCase.id == test_case_id))
+    tc = result.scalar_one_or_none()
+    if not tc:
+        raise NotFoundException("Test case not found")
+    return tc
+
+
+async def get_test_case_for_problem(
+    db: AsyncSession,
+    problem_slug: str,
+    test_case_id: uuid.UUID,
+) -> TestCase:
+    problem = await get_by_slug(db, problem_slug)
+    result = await db.execute(
+        select(TestCase).where(
+            TestCase.id == test_case_id,
+            TestCase.problem_id == problem.id,
+        )
+    )
     tc = result.scalar_one_or_none()
     if not tc:
         raise NotFoundException("Test case not found")
@@ -110,8 +133,7 @@ async def create_test_case(
 async def update_test_case(
     db: AsyncSession, problem_slug: str, test_case_id: uuid.UUID, data: TestCaseUpdate
 ) -> TestCase:
-    await get_by_slug(db, problem_slug)
-    tc = await get_test_case(db, test_case_id)
+    tc = await get_test_case_for_problem(db, problem_slug, test_case_id)
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(tc, key, value)
@@ -123,7 +145,6 @@ async def update_test_case(
 async def delete_test_case(
     db: AsyncSession, problem_slug: str, test_case_id: uuid.UUID
 ) -> None:
-    await get_by_slug(db, problem_slug)
-    tc = await get_test_case(db, test_case_id)
+    tc = await get_test_case_for_problem(db, problem_slug, test_case_id)
     await db.delete(tc)
     await db.commit()

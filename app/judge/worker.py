@@ -3,7 +3,6 @@ from arq.connections import RedisSettings
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core.config import settings
-from app.core.database import ensure_database_schema
 from app.services.judge_service import judge_submission
 
 
@@ -14,8 +13,13 @@ async def judge_job(ctx, submission_id: str) -> None:
 
 
 async def startup(ctx):
-    engine = create_async_engine(settings.database_url)
-    await ensure_database_schema(engine)
+    engine = create_async_engine(
+        settings.database_url,
+        pool_size=2,
+        max_overflow=4,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+    )
     ctx["session_factory"] = async_sessionmaker(engine, expire_on_commit=False)
     ctx["engine"] = engine
 

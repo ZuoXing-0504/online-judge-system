@@ -12,14 +12,14 @@
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
-  <body data-page="home">
+  <body data-page="home" data-shell="user">
     <div class="app-shell">
       <div class="ambient ambient-a"></div>
       <div class="ambient ambient-b"></div>
       <div class="ambient-grid"></div>
 
       <header class="site-header">
-        <a class="brand" href="/">
+        <a class="brand" href="/portal">
           <span class="brand-mark">&lt;/&gt;</span>
           <span class="brand-copy">
             <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
@@ -28,12 +28,10 @@
         </a>
 
         <nav class="site-nav">
-          <a data-nav="home" href="/" data-i18n="nav.home">Home</a>
-          <a data-nav="auth" href="/auth" data-i18n="nav.auth">Auth</a>
+          <a data-nav="home" href="/portal" data-i18n="nav.home">Home</a>
           <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
           <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
           <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
-          <a data-nav="admin" href="/admin" data-i18n="nav.admin">Admin</a>
         </nav>
 
         <div class="header-tools">
@@ -48,6 +46,7 @@
               <strong id="session-name" data-i18n="session.guest">Guest</strong>
               <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
             </div>
+            <a class="secondary-button compact hidden" id="admin-entry" href="/admin" data-i18n="session.adminConsole">Admin console</a>
             <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
             <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
           </div>
@@ -106,10 +105,6 @@
               <h2 data-i18n="home.pagesTitle">One workflow per page</h2>
             </div>
             <div class="page-links">
-              <a class="quick-link" href="/auth">
-                <strong data-i18n="nav.auth">Auth</strong>
-                <span data-i18n="home.pageAuth">Login, register, and switch account state.</span>
-              </a>
               <a class="quick-link" href="/problems">
                 <strong data-i18n="nav.problems">Problems</strong>
                 <span data-i18n="home.pageProblems">Filter and browse the public problem archive.</span>
@@ -126,16 +121,12 @@
                 <strong data-i18n="nav.submissions">Submissions</strong>
                 <span data-i18n="home.pageSubmissions">Review verdict history and drill into test results.</span>
               </a>
-              <a class="quick-link" href="/admin">
-                <strong data-i18n="nav.admin">Admin</strong>
-                <span data-i18n="home.pageAdmin">Create problems, add test cases, and manage roles.</span>
-              </a>
             </div>
           </article>
         </section>
       </main>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script type="module" src="/static/js/app.js"></script>
   </body>
 </html>

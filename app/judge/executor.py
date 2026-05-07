@@ -1,11 +1,25 @@
 import asyncio
-import os
-import tempfile
+import base64
+import platform
+import subprocess
+import sys
 import time
+
+import docker
+from docker.errors import DockerException, ImageNotFound
 
 from app.core.config import settings
 from app.judge.comparator import compare_output
 from app.judge.sandbox import get_preexec_fn, get_subprocess_flags
+
+_client: docker.DockerClient | None = None
+
+
+def _get_client() -> docker.DockerClient:
+    global _client
+    if _client is None:
+        _client = docker.from_env()
+    return _client
 
 
 class ExecutionResult:
@@ -20,51 +34,155 @@ class ExecutionResult:
         self.error_message = error_message
 
 
+async def _execute_locally(
+    code: str,
+    input_data: str,
+    expected_output: str,
+    time_limit_ms: int,
+    memory_limit_kb: int,
+) -> ExecutionResult:
+    timeout_sec = max(time_limit_ms / 1000.0, 0.1)
+    preexec_fn = get_preexec_fn(timeout_sec, memory_limit_kb * 1024)
+    creationflags = get_subprocess_flags()
+    start_time = time.perf_counter()
+
+    def _run_local() -> subprocess.CompletedProcess[bytes]:
+        return subprocess.run(
+            [sys.executable, "-c", code],
+            input=(input_data or "").encode(),
+            capture_output=True,
+            timeout=timeout_sec,
+            preexec_fn=preexec_fn,
+            creationflags=creationflags,
+            check=False,
+        )
+
+    try:
+        completed = await asyncio.to_thread(_run_local)
+    except subprocess.TimeoutExpired:
+        return ExecutionResult(status="time_limit_exceeded")
+    except Exception as exc:
+        return ExecutionResult(status="runtime_error", error_message=str(exc)[:200])
+
+    elapsed_ms = (time.perf_counter() - start_time) * 1000
+    stdout_str = completed.stdout.decode("utf-8", errors="replace")
+    stderr_str = completed.stderr.decode("utf-8", errors="replace")
+
+    if stdout_str and len(stdout_str.encode("utf-8")) > settings.max_output_length:
+        stdout_str = stdout_str[:settings.max_output_length]
+
+    if completed.returncode != 0:
+        return ExecutionResult(
+            status="runtime_error",
+            execution_time_ms=elapsed_ms,
+            output=stdout_str,
+            expected_output=expected_output,
+            error_message=stderr_str.strip() or f"Exit code: {completed.returncode}",
+        )
+
+    if compare_output(expected_output, stdout_str):
+        return ExecutionResult(
+            status="accepted",
+            execution_time_ms=elapsed_ms,
+            output=stdout_str,
+            expected_output=expected_output,
+        )
+
+    return ExecutionResult(
+        status="wrong_answer",
+        execution_time_ms=elapsed_ms,
+        output=stdout_str,
+        expected_output=expected_output,
+    )
+
+
 async def execute_test_case(
     code: str, input_data: str, expected_output: str,
     time_limit_ms: int, memory_limit_kb: int,
 ) -> ExecutionResult:
-    timeout_sec = (time_limit_ms / 1000.0) + 1.0
-    memory_limit_bytes = memory_limit_kb * 1024
+    if platform.system() == "Windows":
+        return await _execute_locally(
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+        )
 
-    preexec_fn = get_preexec_fn(timeout_sec, memory_limit_bytes)
-    flags = get_subprocess_flags()
+    timeout_sec = (time_limit_ms / 1000.0) + 2.0
+    memory_mb = max(16, memory_limit_kb // 1024)
+    encoded_code = base64.b64encode(code.encode()).decode()
+
+    try:
+        client = _get_client()
+    except DockerException:
+        return await _execute_locally(
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+        )
 
     try:
         start_time = time.perf_counter()
-        proc = await asyncio.create_subprocess_exec(
-            "python", "-c", code,
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            preexec_fn=preexec_fn,
-            creationflags=flags,
+        container = client.containers.create(
+            image="oj-sandbox:latest",
+            environment={"OJ_CODE": encoded_code},
+            stdin_open=True,
+            network_disabled=True,
+            mem_limit=f"{memory_mb}m",
+            nano_cpus=1_000_000_000,
+            read_only=True,
+            tmpfs={"/tmp": "size=64m,noexec"},
+            cap_drop=["ALL"],
+            security_opt=["no-new-privileges"],
         )
 
+        def _run():
+            try:
+                container.start()
+                socket = container.attach_socket(
+                    params={"stdin": 1, "stdout": 1, "stderr": 1, "stream": 1}
+                )
+                if hasattr(socket, "_sock"):
+                    sock = socket._sock
+                    sock.sendall((input_data or "").encode())
+                    sock.shutdown(1)
+                result = container.wait(timeout=int(timeout_sec))
+                stdout = container.logs(stdout=True, stderr=False).decode(
+                    "utf-8", errors="replace"
+                )
+                stderr = container.logs(stdout=False, stderr=True).decode(
+                    "utf-8", errors="replace"
+                )
+                return stdout, stderr, result.get("StatusCode", 1)
+            except Exception as e:
+                return "", str(e), 1
+            finally:
+                try:
+                    container.remove(force=True)
+                except Exception:
+                    pass
+
         try:
-            stdout, stderr = await asyncio.wait_for(
-                proc.communicate(input=input_data.encode()),
-                timeout=timeout_sec,
+            stdout_str, stderr_str, exit_code = await asyncio.wait_for(
+                asyncio.to_thread(_run), timeout=timeout_sec + 3
             )
         except asyncio.TimeoutError:
-            proc.kill()
-            await proc.wait()
+            try:
+                container.remove(force=True)
+            except Exception:
+                pass
             return ExecutionResult(status="time_limit_exceeded")
 
         elapsed_ms = (time.perf_counter() - start_time) * 1000
-        stdout_str = stdout.decode("utf-8", errors="replace")
 
         if stdout_str and len(stdout_str.encode("utf-8")) > settings.max_output_length:
             stdout_str = stdout_str[:settings.max_output_length]
 
-        if proc.returncode != 0:
-            stderr_str = stderr.decode("utf-8", errors="replace")[:2000]
+        if exit_code == 137:
+            return ExecutionResult(status="time_limit_exceeded")
+
+        if exit_code != 0:
             return ExecutionResult(
                 status="runtime_error",
                 execution_time_ms=elapsed_ms,
                 output=stdout_str,
                 expected_output=expected_output,
-                error_message=stderr_str.strip() or f"Exit code: {proc.returncode}",
+                error_message=stderr_str.strip() or f"Exit code: {exit_code}",
             )
 
         passed = compare_output(expected_output, stdout_str)
@@ -83,5 +201,15 @@ async def execute_test_case(
                 expected_output=expected_output,
             )
 
-    except FileNotFoundError:
-        return ExecutionResult(status="runtime_error", error_message="Python not found")
+    except ImageNotFound:
+        return await _execute_locally(
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+        )
+    except DockerException as e:
+        fallback = await _execute_locally(
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+        )
+        if fallback.status != "runtime_error" or not fallback.error_message:
+            return fallback
+        fallback.error_message = fallback.error_message or str(e)[:200]
+        return fallback
