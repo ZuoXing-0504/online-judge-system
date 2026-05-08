@@ -26,6 +26,17 @@ class ContestUpdate(BaseModel):
     problem_slugs: Optional[list[str]] = None
 
 
+class ContestProblemRead(BaseModel):
+    id: uuid.UUID
+    problem_id: uuid.UUID
+    label: str
+    order: int
+    title: str = ""
+    slug: str = ""
+
+    model_config = {"from_attributes": True}
+
+
 class ContestRead(BaseModel):
     id: uuid.UUID
     title: str
@@ -40,6 +51,7 @@ class ContestRead(BaseModel):
     updated_at: datetime
     participant_count: int = 0
     problem_count: int = 0
+    problems: list[ContestProblemRead] = []
 
     model_config = {"from_attributes": True}
 
@@ -53,17 +65,6 @@ class ContestList(BaseModel):
     is_public: bool
     participant_count: int = 0
     problem_count: int = 0
-
-    model_config = {"from_attributes": True}
-
-
-class ContestProblemRead(BaseModel):
-    id: uuid.UUID
-    problem_id: uuid.UUID
-    label: str
-    order: int
-    title: str = ""
-    slug: str = ""
 
     model_config = {"from_attributes": True}
 

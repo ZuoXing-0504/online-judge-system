@@ -127,6 +127,19 @@ async function renderContestDetail(slug) {
         <div class="stat-card"><span>Problems</span><strong>${c.problem_count}</strong></div>
         <div class="stat-card"><span>Participants</span><strong>${c.participant_count}</strong></div>
       </div>
+      ${c.problems && c.problems.length ? `
+        <div class="panel-heading" style="margin-top:18px">
+          <p class="eyebrow">Problems</p><h2>Contest problems</h2>
+        </div>
+        <div class="stack-list">
+          ${c.problems.map(p => `
+            <a class="problem-card" href="/problem?slug=${escapeHtml(p.slug)}">
+              <strong><span class="problem-num">${escapeHtml(p.label||'?')}</span> ${escapeHtml(p.title || p.slug)}</strong>
+              <p>${escapeHtml(p.slug)}</p>
+            </a>
+          `).join("")}
+        </div>
+      ` : ""}
       ${isLoggedIn() ? `<button class="primary-button" id="register-contest-btn" style="margin-top:14px" data-slug="${slug}">Register</button>` : ''}
       <div class="panel-heading" style="margin-top:20px">
         <p class="eyebrow">Leaderboard${frozen ? " (FROZEN)" : ""}</p>

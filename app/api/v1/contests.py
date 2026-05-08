@@ -35,12 +35,38 @@ async def create_contest(
     return contest
 
 
-@router.get("/{slug}", response_model=ContestRead)
+@router.get("/{slug}")
 async def get_contest(
     slug: str,
     db: AsyncSession = Depends(get_db),
 ):
-    return await contest_service.get_contest(db, slug)
+    contest = await contest_service.get_contest(db, slug)
+    return {
+        "id": str(contest.id),
+        "title": contest.title,
+        "slug": contest.slug,
+        "description": contest.description,
+        "start_time": contest.start_time.isoformat(),
+        "end_time": contest.end_time.isoformat(),
+        "is_public": contest.is_public,
+        "freeze_minutes": contest.freeze_minutes,
+        "created_by": str(contest.created_by),
+        "created_at": contest.created_at.isoformat(),
+        "updated_at": contest.updated_at.isoformat(),
+        "participant_count": contest.participant_count if hasattr(contest, "participant_count") else 0,
+        "problem_count": len(contest.problems),
+        "problems": [
+            {
+                "id": str(cp.id),
+                "problem_id": str(cp.problem_id),
+                "label": cp.label or "",
+                "order": cp.order or 0,
+                "title": cp.problem.title if cp.problem else "",
+                "slug": cp.problem.slug if cp.problem else "",
+            }
+            for cp in contest.problems
+        ],
+    }
 
 
 @router.post("/{slug}/register", status_code=201)
