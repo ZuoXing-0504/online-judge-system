@@ -180,10 +180,13 @@
               <h2>Add or update a solution</h2>
             </div>
             <form class="stack-form" id="solution-form">
-              <label>
-                <span>Problem slug</span>
-                <input type="text" name="problem_slug" required />
-              </label>
+              <div class="toolbar-row" style="margin-bottom:8px">
+                <label style="flex:1;margin:0">
+                  <span>Problem slug</span>
+                  <input type="text" name="problem_slug" id="solution-slug" required />
+                </label>
+                <button class="secondary-button compact" id="load-solution-btn" type="button" style="margin-top:18px">Load</button>
+              </div>
               <label>
                 <span>Solution code (Python)</span>
                 <textarea name="solution_code" rows="8" style="font-family:monospace" required></textarea>

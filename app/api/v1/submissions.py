@@ -20,7 +20,7 @@ from app.schemas.submission import (
     SubmissionList,
     TestResultRead,
 )
-from app.services import submission_service
+from app.services import submission_service, contest_service
 
 router = APIRouter()
 
@@ -88,6 +88,14 @@ async def submit_code(
     )
     redis_pool = await get_redis_pool()
     await redis_pool.enqueue_job("judge_job", str(submission.id))
+
+    # Auto-register for contest if contest_slug provided
+    if data.contest_slug:
+        try:
+            await contest_service.register_participant(db, data.contest_slug, user)
+        except Exception:
+            pass
+
     return submission
 
 

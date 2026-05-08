@@ -8,12 +8,16 @@ function localizeProblemTitle(slug, fallbackTitle) {
   return DEMO_PROBLEM_TRANSLATIONS[state.language]?.[slug]?.title || fallbackTitle || slug;
 }
 
+let _contestSlug = "";
+
 export function initSubmitPage() {
-  const slug = new URLSearchParams(window.location.search).get("slug");
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("slug");
+  _contestSlug = params.get("contest") || "";
   const slugInput = document.getElementById("manual-problem-slug");
   const templateButton = document.getElementById("load-template");
   const submitButton = document.getElementById("submit-code");
-  console.log("[submit] init — templateBtn:", !!templateButton, "submitBtn:", !!submitButton, "CodeEditor:", !!window.CodeEditor);
+  console.log("[submit] init — templateBtn:", !!templateButton, "submitBtn:", !!submitButton, "CodeEditor:", !!window.CodeEditor, "contest:", _contestSlug);
 
   if (slug && slugInput) slugInput.value = slug;
   if (templateButton) {
@@ -61,8 +65,10 @@ async function handleSubmit() {
   if (!isLoggedIn()) { setFeedback(feedback, t("editor.noAuth"), "error"); return; }
   if (!slug) { setFeedback(feedback, t("editor.slugRequired"), "error"); return; }
   try {
+    const payload = { problem_slug: slug, code, language: lang };
+    if (_contestSlug) payload.contest_slug = _contestSlug;
     const submission = await apiFetch("/api/v1/submissions", {
-      method: "POST", body: JSON.stringify({ problem_slug: slug, code, language: lang }),
+      method: "POST", body: JSON.stringify(payload),
     }, true);
     showToast(t("editor.queueSuccess", { id: submission.id }), "success");
     setFeedback(feedback, t("editor.queueSuccess", { id: submission.id }), "success");

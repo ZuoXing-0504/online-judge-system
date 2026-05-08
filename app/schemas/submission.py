@@ -9,6 +9,7 @@ class SubmissionCreate(BaseModel):
     problem_slug: str
     code: str = Field(min_length=1, max_length=65536)
     language: Literal["python", "cpp", "java"] = "python"
+    contest_slug: Optional[str] = None
 
 
 class SubmissionList(BaseModel):

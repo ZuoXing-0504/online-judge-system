@@ -12,6 +12,8 @@ export async function initAdminPage() {
   if (problemForm) problemForm.addEventListener("submit", handleProblemCreate);
   if (testCaseForm) testCaseForm.addEventListener("submit", handleTestCaseCreate);
   if (solutionForm) solutionForm.addEventListener("submit", handleSolutionSave);
+  const loadSolBtn = document.getElementById("load-solution-btn");
+  if (loadSolBtn) loadSolBtn.addEventListener("click", handleSolutionLoad);
   if (contestForm) contestForm.addEventListener("submit", handleContestCreate);
   if (refreshUsers) refreshUsers.addEventListener("click", loadAdminUsers);
   renderGate();
@@ -96,6 +98,20 @@ function renderUsers() {
       await changeRole(userId, role);
     });
   });
+}
+
+async function handleSolutionLoad() {
+  const slug = document.getElementById("solution-slug")?.value.trim();
+  const feedback = document.getElementById("solution-feedback");
+  if (!slug) { setFeedback(feedback, "Enter a problem slug first", "error"); return; }
+  try {
+    const problem = await apiFetch(`/api/v1/problems/${encodeURIComponent(slug)}`);
+    const form = document.getElementById("solution-form");
+    if (!form) return;
+    form.solution_code.value = problem.solution_code || "";
+    form.solution_explanation.value = problem.solution_explanation || "";
+    setFeedback(feedback, `Loaded solution for ${slug}`, "success");
+  } catch (e) { setFeedback(feedback, e.message, "error"); }
 }
 
 async function handleSolutionSave(event) {
