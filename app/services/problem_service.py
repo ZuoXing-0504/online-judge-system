@@ -40,7 +40,10 @@ async def list_problems(
     if difficulty:
         query = query.where(Problem.difficulty == difficulty)
     if search:
-        query = query.where(Problem.title.ilike(f"%{search}%"))
+        query = query.where(
+            Problem.title.ilike(f"%{search}%")
+            | Problem.slug.ilike(f"%{search}%")
+        )
     query = query.order_by(Problem.created_at.desc())
 
     count_query = select(func.count()).select_from(query.subquery())
