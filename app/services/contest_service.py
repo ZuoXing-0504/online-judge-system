@@ -78,6 +78,8 @@ async def register_participant(db: AsyncSession, contest_slug: str, user: User) 
     now = datetime.now(timezone.utc)
     if now > contest.end_time:
         raise BadRequestException("Contest has ended")
+    if now < contest.start_time:
+        raise BadRequestException("Contest has not started yet")
 
     existing = await db.execute(
         select(ContestParticipant).where(
@@ -157,7 +159,15 @@ async def update_contest_scores(db: AsyncSession, submission: Submission) -> Non
         if already_solved.scalar_one_or_none():
             continue
 
-        # Record attempt
+        # Record attempt (skip duplicates from retries)
+        existing_attempt = await db.execute(
+            select(ContestSubmissionAttempt).where(
+                ContestSubmissionAttempt.submission_id == submission.id,
+            )
+        )
+        if existing_attempt.scalar_one_or_none():
+            continue
+
         attempt = ContestSubmissionAttempt(
             contest_id=contest.id,
             user_id=submission.user_id,
