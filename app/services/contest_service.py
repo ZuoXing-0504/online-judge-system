@@ -40,8 +40,15 @@ async def create_contest(db: AsyncSession, data, author_id: uuid.UUID) -> Contes
             ))
 
     await db.commit()
-    await db.refresh(contest)
-    return contest
+    result = await db.execute(
+        select(Contest)
+        .options(joinedload(Contest.problems).joinedload(ContestProblem.problem))
+        .where(Contest.id == contest.id)
+    )
+    created = result.unique().scalar_one()
+    created.participant_count = 0
+    created.problem_count = len(created.problems)
+    return created
 
 
 async def get_contest(db: AsyncSession, slug: str) -> Contest:
@@ -53,6 +60,14 @@ async def get_contest(db: AsyncSession, slug: str) -> Contest:
     contest = result.unique().scalar_one_or_none()
     if not contest:
         raise NotFoundException("Contest not found")
+    contest.participant_count = (
+        await db.execute(
+            select(func.count())
+            .select_from(ContestParticipant)
+            .where(ContestParticipant.contest_id == contest.id)
+        )
+    ).scalar() or 0
+    contest.problem_count = len(contest.problems)
     return contest
 
 
