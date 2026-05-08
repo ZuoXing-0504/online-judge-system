@@ -1,3 +1,4 @@
+import os
 import re
 
 import pytest
@@ -16,7 +17,10 @@ from app.main import app
 from app.models.base import Base
 from app.models.user import User
 
-TEST_DATABASE_URL = "postgresql+asyncpg://judge:judge_pass@localhost:5432/online_judge_test"
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql+asyncpg://judge:judge_pass@localhost:5432/online_judge_test",
+)
 
 
 class FakeRedisPool:
