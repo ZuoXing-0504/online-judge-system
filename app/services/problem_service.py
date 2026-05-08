@@ -36,7 +36,7 @@ async def list_problems(
 ) -> tuple[list[Problem], int]:
     query = select(Problem).where(Problem.deleted_at.is_(None))
     if not is_admin:
-        query = query.where(Problem.is_public == True)
+        query = query.where(Problem.is_public)
     if difficulty:
         query = query.where(Problem.difficulty == difficulty)
     if search:
