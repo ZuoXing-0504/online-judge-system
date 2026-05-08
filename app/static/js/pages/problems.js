@@ -11,15 +11,29 @@ function localizeProblem(problem) {
   return translated ? { ...problem, ...translated } : problem;
 }
 
+function getProblemTags(slug) {
+  const m = {
+    "hello-world":"IO","a-plus-b":"IO","even-odd":"If","prime-check":"Math","fibonacci":"DP",
+    "valid-parentheses":"Stack","binary-search":"BS","two-sum":"Hash","fizzbuzz":"Loop",
+    "max-subarray-sum":"DP","climbing-stairs":"DP","gcd":"Math","palindrome-number":"Str",
+    "n-queens-count":"BT","remove-duplicates":"Set","bubble-sort":"Sort",
+    "queue-simulation":"Q","stack-simulation":"Stack","josephus":"Math",
+    "word-count":"Str","factorial":"Math","knapsack-01":"DP","edit-distance":"DP",
+    "subset-sum":"DP","coin-change":"DP","permutations":"BT",
+  };
+  return m[slug] || "";
+}
+
 function renderProblemCard(problem, globalIndex) {
   const localized = localizeProblem(problem);
+  const tags = getProblemTags(problem.slug);
   return `
     <a class="problem-card" href="/problem?slug=${encodeURIComponent(problem.slug)}" data-problem-link>
       <strong><span class="problem-num">#${globalIndex}</span> ${escapeHtml(localized.title)}</strong>
       <p>${escapeHtml(problem.slug)}</p>
       <div class="meta-row">
         <span class="status-chip ${difficultyClass(problem.difficulty)}">${escapeHtml(translateDifficulty(problem.difficulty))}</span>
-        <span class="status-chip neutral">${escapeHtml(problem.is_public ? t("visibility.public") : t("visibility.private"))}</span>
+        ${tags ? `<span class="status-chip neutral" style="font-size:0.7rem">${escapeHtml(tags)}</span>` : ""}
       </div>
     </a>`;
 }

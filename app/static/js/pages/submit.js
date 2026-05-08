@@ -35,9 +35,15 @@ export function initSubmitPage() {
 export function renderSubmit() {
   const target = document.getElementById("editor-target");
   const hint = document.getElementById("editor-hint");
+  const contestBanner = document.getElementById("contest-banner");
   const slug = document.getElementById("manual-problem-slug")?.value.trim() || "";
   if (target) target.textContent = slug ? t("common.target", { slug }) : t("submitPage.noTarget");
   if (hint) hint.textContent = state.user ? t("editor.authedHint") : t("editor.loginHint");
+  if (contestBanner && _contestSlug) {
+    contestBanner.innerHTML = `Contest: <strong>${escapeHtml(_contestSlug)}</strong> - submission will count toward standings`;
+    contestBanner.className = "status-chip warning";
+    contestBanner.style.display = "";
+  }
 }
 
 function loadCodeTemplate() {

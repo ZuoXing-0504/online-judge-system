@@ -1090,7 +1090,14 @@ html[dir="rtl"] .toolbar-row {
     flex-wrap: wrap;
   }
 
-  #code-editor {
-    min-height: 320px;
+  #code-editor,
+  #quick-code-editor {
+    min-height: 240px;
   }
+
+  .site-nav { gap: 3px; }
+  .site-nav a { padding: 8px 10px; font-size: 0.82rem; }
+
+  .brand-copy strong { font-size: 1.1rem; }
+  .brand-mark { width: 44px; height: 44px; font-size: 0.9rem; }
 }

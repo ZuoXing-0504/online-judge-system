@@ -1,9 +1,10 @@
 import uuid
 from fastapi import APIRouter, Depends, Query, Request
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import get_current_user_optional, require_admin
+from app.core.dependencies import get_current_user, get_current_user_optional, require_admin
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
 from app.schemas.problem import ProblemCreate, ProblemList, ProblemRead, ProblemUpdate
@@ -47,6 +48,59 @@ async def get_problem(
         from app.core.exceptions import NotFoundException
         raise NotFoundException("Problem not found")
     return problem
+
+
+@router.post("/{slug}/run")
+async def run_sample(
+    slug: str,
+    data: dict,
+    db: AsyncSession = Depends(get_db),
+):
+    from app.judge.executor import execute_test_case
+    from app.models.test_case import TestCase as TestCaseModel  # noqa: F811
+
+    problem = await problem_service.get_by_slug(db, slug)
+    result = await db.execute(
+        select(TestCaseModel)
+        .where(TestCaseModel.problem_id == problem.id, TestCaseModel.is_sample == True)
+        .order_by(TestCaseModel.order)
+        .limit(1)
+    )
+    sample = result.scalar_one_or_none()
+    if sample:
+        exec_result = await execute_test_case(
+            code=data.get("code", ""),
+            input_data=sample.input,
+            expected_output=sample.expected_output,
+            time_limit_ms=problem.time_limit_ms,
+            memory_limit_kb=problem.memory_limit_kb,
+            language=data.get("language", "python"),
+        )
+        return {"status": exec_result.status, "output": exec_result.output or "",
+                "expected": sample.expected_output or "",
+                "error": exec_result.error_message or ""}
+    return {"status": "no_sample", "output": "", "expected": "", "error": "No sample test case"}
+
+
+@router.get("/{slug}/status")
+async def get_problem_status(
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    from sqlalchemy import func
+    from app.models.submission import Submission
+
+    problem = await problem_service.get_by_slug(db, slug)
+    result = await db.execute(
+        select(Submission.status, func.count())
+        .where(Submission.user_id == user.id, Submission.problem_id == problem.id)
+        .group_by(Submission.status)
+    )
+    rows = dict(result.all())
+    accepted = rows.get("accepted", 0)
+    total = sum(rows.values())
+    return {"slug": slug, "accepted": accepted > 0, "total_attempts": total, "accepted_count": accepted}
 
 
 @router.post("", response_model=ProblemRead, status_code=201)

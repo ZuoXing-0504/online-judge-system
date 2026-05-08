@@ -1,7 +1,7 @@
 import { apiFetch } from "../api.js";
-import { state } from "../state.js";
+import { state, isLoggedIn } from "../state.js";
 import { t, DEMO_PROBLEM_TRANSLATIONS } from "../i18n.js";
-import { escapeHtml, translateDifficulty, difficultyClass } from "../ui.js";
+import { escapeHtml, translateDifficulty, difficultyClass, showToast } from "../ui.js";
 
 function localizeProblem(problem) {
   if (!problem) return problem;
@@ -18,10 +18,56 @@ export async function initProblemDetailPage() {
   }
   try {
     state.selectedProblem = await apiFetch(`/api/v1/problems/${slug}`);
+    if (isLoggedIn()) {
+      try { state.problemStatus = await apiFetch(`/api/v1/problems/${slug}/status`, {}, true); }
+      catch { state.problemStatus = null; }
+    } else { state.problemStatus = null; }
   } catch {
     state.selectedProblem = null;
+    state.problemStatus = null;
   }
   renderDetail();
+  initQuickSubmit();
+}
+
+function initQuickSubmit() {
+  const runBtn = document.getElementById("run-sample-btn");
+  const submitBtn = document.getElementById("quick-submit-btn");
+  const editor = document.getElementById("quick-code-editor");
+  if (!editor || !state.selectedProblem) return;
+
+  if (runBtn) {
+    runBtn.addEventListener("click", async () => {
+      const code = editor.value;
+      const output = document.getElementById("run-sample-output");
+      if (!code.trim()) return;
+      runBtn.disabled = true;
+      output.textContent = "Running...";
+      try {
+        const resp = await apiFetch(`/api/v1/problems/${state.selectedProblem.slug}/run`, {
+          method: "POST", body: JSON.stringify({ code, language: "python" }),
+        }, false);
+        output.textContent = resp.output || resp.error || "(no output)";
+        output.style.color = resp.status === "accepted" ? "var(--success)" : "var(--danger)";
+      } catch (e) { output.textContent = e.message; output.style.color = "var(--danger)"; }
+      finally { runBtn.disabled = false; }
+    });
+  }
+  if (submitBtn) {
+    submitBtn.addEventListener("click", async () => {
+      if (!isLoggedIn()) { showToast("Login to submit", "error"); return; }
+      const code = editor.value;
+      if (!code.trim()) return;
+      submitBtn.disabled = true;
+      try {
+        const resp = await apiFetch("/api/v1/submissions", {
+          method: "POST", body: JSON.stringify({ problem_slug: state.selectedProblem.slug, code, language: "python" }),
+        }, true);
+        showToast(`Submitted: ${resp.id.slice(0, 8)}`, "success");
+      } catch (e) { showToast(e.message, "error"); }
+      finally { submitBtn.disabled = false; }
+    });
+  }
 }
 
 export function renderDetail() {
@@ -70,6 +116,23 @@ export function renderDetail() {
   if (sampleIn) sampleIn.textContent = problem.sample_input || t("statement.noSample");
   if (sampleOut) sampleOut.textContent = problem.sample_output || t("statement.noSample");
   if (submitLink) submitLink.href = `/submit?slug=${encodeURIComponent(problem.slug)}`;
+
+  // Status badge
+  const statusBadge = document.getElementById("problem-status-badge");
+  if (statusBadge) {
+    if (state.problemStatus?.accepted) {
+      statusBadge.textContent = "Solved";
+      statusBadge.className = "status-chip success";
+    } else if (state.problemStatus?.total_attempts > 0) {
+      statusBadge.textContent = `${state.problemStatus.total_attempts} attempts`;
+      statusBadge.className = "status-chip warning";
+    } else {
+      statusBadge.textContent = "Not attempted";
+      statusBadge.className = "status-chip neutral";
+    }
+    statusBadge.style.display = "";
+  }
+
   renderSolution(problem);
 }
 
@@ -116,11 +179,12 @@ function renderSolution(problem) {
     } else {
       if (explanation && problem.solution_explanation) {
         explanation.innerHTML = `<strong>Explanation</strong><p>${escapeHtml(problem.solution_explanation)}</p>`;
-        console.log("[solution] explanation rendered, len:", problem.solution_explanation.length);
       }
       if (codeBlock && problem.solution_code) {
-        codeBlock.textContent = problem.solution_code;
-        console.log("[solution] code block rendered, lines:", problem.solution_code.split("\n").length);
+        codeBlock.innerHTML = `<button class="secondary-button compact" id="copy-solution-btn" style="margin-bottom:8px">Copy code</button><pre style="margin:0;white-space:pre-wrap">${escapeHtml(problem.solution_code)}</pre>`;
+        document.getElementById("copy-solution-btn")?.addEventListener("click", () => {
+          navigator.clipboard.writeText(problem.solution_code).then(() => showToast("Copied!", "success"));
+        });
       }
       header.hidden = false;
       area.hidden = false;

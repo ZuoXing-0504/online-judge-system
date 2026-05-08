@@ -96,4 +96,18 @@ export function renderHomeState() {
   if (metricSubmissions) metricSubmissions.textContent = String(state.submissions.length);
   if (metricSession) metricSession.textContent = state.user ? translateRole(state.user.role) : t("session.guest");
   renderFeaturedProblems(featuredProblems);
+  renderUserStats();
 }
+
+function renderUserStats() {
+  const stats = document.getElementById("user-stats");
+  if (!stats || !isLoggedIn() || !state.submissions.length) { if (stats) stats.style.display = "none"; return; }
+  const accepted = state.submissions.filter(s => s.status === "accepted").length;
+  stats.style.display = "";
+  stats.innerHTML = `
+    <div class="panel-heading"><p class="eyebrow">Your Progress</p><h2>Submission Stats</h2></div>
+    <div class="stat-grid" style="margin-top:8px">
+      <div class="stat-card"><span>Total</span><strong>${state.submissions.length}</strong></div>
+      <div class="stat-card"><span>Accepted</span><strong>${accepted}</strong></div>
+      <div class="stat-card"><span>Rate</span><strong>${Math.round(accepted / Math.max(1, state.submissions.length) * 100)}%</strong></div>
+    </div>`;
