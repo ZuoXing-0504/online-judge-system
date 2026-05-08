@@ -4,30 +4,37 @@ console.log("[editor] #code-editor found:", !!ta, "tag:", ta?.tagName);
 if (!ta || ta.tagName !== "TEXTAREA") throw new Error("Missing #code-editor textarea");
 
 window.CodeEditor = {
-  getValue() { console.log("[editor] getValue =>", ta.value.slice(0, 40)); return ta.value; },
-  setValue(v) { console.log("[editor] setValue len:", v.length, "preview:", v.slice(0, 60)); ta.value = v; },
+  getValue() { return ta.value; },
+  setValue(v) { ta.value = v; },
   focus() { ta.focus(); },
   _enhanced: false,
 };
 console.log("[editor] window.CodeEditor set (textarea fallback)");
 
-// Try CodeMirror upgrade in the background.
 (async function upgrade() {
   try {
     console.log("[editor] fetching CodeMirror from CDN...");
     const base = "https://esm.sh";
-    const [viewMod, langPy, cmdMod, cmMod] = await Promise.all([
+    const [viewMod, langPy, langCpp, langJava, cmdMod, cmMod, stateMod] = await Promise.all([
       import(`${base}/@codemirror/view@6`),
       import(`${base}/@codemirror/lang-python@6`),
+      import(`${base}/@codemirror/lang-cpp@6`),
+      import(`${base}/@codemirror/lang-java@6`),
       import(`${base}/@codemirror/commands@6`),
       import(`${base}/codemirror@6`),
+      import(`${base}/@codemirror/state@6`),
     ]);
     const { EditorView, keymap } = viewMod;
     const { python } = langPy;
+    const { cpp } = langCpp;
+    const { java } = langJava;
     const { indentWithTab } = cmdMod;
-    const historyKeymap = cmdMod.historyKeymap || cmdMod.defaultKeymap?.filter(k => k?.key?.startsWith("Mod-")) || [];
+    const historyKeymap = cmdMod.historyKeymap || [];
     const { basicSetup } = cmMod;
-    console.log("[editor] CodeMirror loaded, upgrading...");
+    const { Compartment } = stateMod;
+
+    const langExtensions = { python: python(), cpp: cpp(), java: java() };
+    const langCompartment = new Compartment();
 
     const parent = ta.parentNode;
 
@@ -35,7 +42,7 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
       doc: ta.value,
       extensions: [
         basicSetup,
-        python(),
+        langCompartment.of(python()),
         keymap.of([indentWithTab, ...(Array.isArray(historyKeymap) ? historyKeymap : [])]),
         EditorView.theme({
           ".cm-scroller": {
@@ -52,7 +59,6 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
       parent: parent,
     });
 
-    // Only hide textarea AFTER EditorView is successfully created.
     ta.style.display = "none";
 
     window.CodeEditor = {
@@ -61,38 +67,30 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
       focus() { view.focus(); },
       _enhanced: true,
       setLanguage(lang) {
-        // Reconfigure the editor's language extension
-        view.dispatch({
-          effects: view.state.reconfigure(
-            python() // Currently only Python; C++/Java use plain text
-          ),
-        });
+        const ext = langExtensions[lang];
+        if (ext) {
+          view.dispatch({ effects: langCompartment.reconfigure(ext) });
+          console.log("[editor] language switched to:", lang);
+        }
       },
     };
-    console.log("[editor] CodeMirror upgrade complete");
+    console.log("[editor] CodeMirror upgrade complete (Python/C++/Java)");
     parent.classList.add("cm-ready");
   } catch (e) {
     console.log("[editor] CDN upgrade failed, textarea stays:", e.message || e);
-    ta.style.display = ""; // ensure visible
+    ta.style.display = "";
   }
 })();
 
-// Bind language selector change to reflect in editor
 if (typeof document !== "undefined" && document.addEventListener) {
 document.addEventListener("DOMContentLoaded", () => {
   const sel = document.getElementById("language-select-submit");
   if (sel) {
     sel.addEventListener("change", () => {
-      // Update template placeholder for C++/Java
-      const templates = {
-        python: "# Read from stdin, write to stdout\n# Problem slug: {slug}\ndef solve():\n    pass\n\nif __name__ == '__main__':\n    solve()",
-        cpp: "// Read from stdin, write to stdout\n// Problem slug: {slug}\n#include <iostream>\nint main() {\n    \n    return 0;\n}",
-        java: "// Read from stdin, write to stdout\n// Problem slug: {slug}\nimport java.util.*;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        \n    }\n}",
-      };
       if (window.CodeEditor && window.CodeEditor._enhanced) {
         window.CodeEditor.setLanguage(sel.value);
       }
     });
   }
 });
-} // if document check
+}
