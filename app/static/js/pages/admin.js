@@ -39,28 +39,30 @@ function setFormsDisabled(disabled) {
 
 async function handleProblemCreate(event) {
   event.preventDefault();
+  const form = event.currentTarget;
   const feedback = document.getElementById("problem-create-feedback");
   try {
-    const payload = formToJson(event.currentTarget);
+    const payload = formToJson(form);
     payload.is_public = Boolean(payload.is_public);
     const created = await apiFetch("/api/v1/problems", { method: "POST", body: JSON.stringify(payload) }, true);
     showToast(t("adminPage.createProblemSuccess", { slug: created.slug }), "success");
     setFeedback(feedback, t("adminPage.createProblemSuccess", { slug: created.slug }), "success");
-    event.currentTarget.reset();
+    form.reset();
   } catch (error) { setFeedback(feedback, error.message, "error"); }
 }
 
 async function handleTestCaseCreate(event) {
   event.preventDefault();
+  const form = event.currentTarget;
   const feedback = document.getElementById("test-case-feedback");
   try {
-    const payload = formToJson(event.currentTarget);
+    const payload = formToJson(form);
     const slug = payload.problem_slug;
     const request = { input: payload.input, expected_output: payload.expected_output, is_sample: Boolean(payload.is_sample), order: Number(payload.order || 0) };
     await apiFetch(`/api/v1/problems/${encodeURIComponent(slug)}/test-cases`, { method: "POST", body: JSON.stringify(request) }, true);
     showToast(t("adminPage.createTestCaseSuccess", { slug }), "success");
     setFeedback(feedback, t("adminPage.createTestCaseSuccess", { slug }), "success");
-    event.currentTarget.reset();
+    form.reset();
   } catch (error) { setFeedback(feedback, error.message, "error"); }
 }
 
@@ -131,9 +133,10 @@ async function handleSolutionSave(event) {
 
 async function handleContestCreate(event) {
   event.preventDefault();
+  const form = event.currentTarget;
   const feedback = document.getElementById("contest-create-feedback");
   try {
-    const payload = formToJson(event.currentTarget);
+    const payload = formToJson(form);
     const slugsStr = payload.problem_slugs_str || "";
     const problem_slugs = slugsStr.split(",").map(s => s.trim()).filter(Boolean);
     delete payload.problem_slugs_str;
@@ -143,7 +146,7 @@ async function handleContestCreate(event) {
     const created = await apiFetch("/api/v1/contests", { method: "POST", body: JSON.stringify(payload) }, true);
     showToast(`Contest created: ${created.slug}`, "success");
     setFeedback(feedback, `Contest "${created.slug}" created with ${problem_slugs.length} problems.`, "success");
-    event.currentTarget.reset();
+    form.reset();
   } catch (error) { setFeedback(feedback, error.message, "error"); }
 }
 

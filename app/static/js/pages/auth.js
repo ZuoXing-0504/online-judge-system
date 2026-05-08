@@ -82,12 +82,13 @@ export function initRegisterPage() {
 
 async function handleRegister(event) {
   event.preventDefault();
+  const form = event.currentTarget;
   const feedback = document.getElementById("register-feedback");
-  const formData = new FormData(event.currentTarget);
+  const formData = new FormData(form);
   const payload = Object.fromEntries(formData.entries());
   try {
     await apiFetch("/api/v1/auth/register", { method: "POST", body: JSON.stringify(payload) });
-    event.currentTarget.reset();
+    form.reset();
     showToast(t("auth.registerSuccess"), "success");
     setFeedback(feedback, t("auth.registerSuccess"), "success");
     completeRegisterFlow(payload.username);
