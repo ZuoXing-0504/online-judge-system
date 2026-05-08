@@ -59,7 +59,13 @@ async def test_e2e_full_flow(client: AsyncClient, admin_token: str, user_token: 
 async def test_e2e_solution_and_csrf(client: AsyncClient, admin_token: str):
     headers = {"Authorization": f"Bearer {admin_token}"}
 
-    # Create a problem with solution
+    # Create the problem first
+    await client.post("/api/v1/problems", json={
+        "title": "E2E Sum", "slug": "e2e-sum", "description": "Sum a and b.",
+        "difficulty": "easy", "is_public": True,
+    }, headers=headers)
+
+    # Add solution
     resp = await client.put("/api/v1/problems/e2e-sum", json={
         "solution_code": "print(sum(map(int,input().split())))",
         "solution_explanation": "Read two ints, print sum.",
