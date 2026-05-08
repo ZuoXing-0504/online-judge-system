@@ -26,6 +26,7 @@
         <nav class="site-nav">
           <a data-nav="admin" href="/admin" data-i18n="adminNav.overview">Console</a>
           <a href="#problem-management" data-i18n="adminNav.problemOps">Problem ops</a>
+          <a href="#contest-management">Contests</a>
           <a href="#user-management" data-i18n="adminNav.userRoles">User roles</a>
           <a href="/portal" data-i18n="adminNav.portal">User portal</a>
         </nav>
@@ -169,6 +170,80 @@
               <button class="primary-button" type="submit" data-i18n="adminPage.createTestCase">Create test case</button>
             </form>
             <p class="feedback" id="test-case-feedback"></p>
+          </article>
+        </section>
+
+        <section class="content-grid half-half" id="solution-management">
+          <article class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow">Solutions</p>
+              <h2>Add or update a solution</h2>
+            </div>
+            <form class="stack-form" id="solution-form">
+              <label>
+                <span>Problem slug</span>
+                <input type="text" name="problem_slug" required />
+              </label>
+              <label>
+                <span>Solution code (Python)</span>
+                <textarea name="solution_code" rows="8" style="font-family:monospace" required></textarea>
+              </label>
+              <label>
+                <span>Explanation</span>
+                <textarea name="solution_explanation" rows="4"></textarea>
+              </label>
+              <button class="primary-button" type="submit">Save solution</button>
+            </form>
+            <p class="feedback" id="solution-feedback"></p>
+          </article>
+          <article class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow">Tips</p>
+              <h2>Solution guidelines</h2>
+            </div>
+            <div class="stack-notes">
+              <div class="note-card">
+                <strong>Code format</strong>
+                <p>Write complete, runnable Python code. Use def solve(): pattern with if __name__ == "__main__": solve().</p>
+              </div>
+              <div class="note-card">
+                <strong>Explanation</strong>
+                <p>Explain the algorithm, time/space complexity, and any key insights. Keep it clear and educational.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="content-grid half-half" id="contest-management">
+          <article class="panel surface">
+            <div class="panel-heading">
+              <p class="eyebrow">Contests</p>
+              <h2>Create a new contest</h2>
+            </div>
+            <form class="stack-form" id="contest-create-form">
+              <label><span>Title</span><input type="text" name="title" required /></label>
+              <label><span>Slug</span><input type="text" name="slug" required placeholder="weekly-contest-2" /></label>
+              <label><span>Description</span><textarea name="description" rows="2"></textarea></label>
+              <div class="inline-grid">
+                <label><span>Start time (ISO)</span><input type="text" name="start_time" placeholder="2026-06-01T12:00:00Z" required /></label>
+                <label><span>End time (ISO)</span><input type="text" name="end_time" placeholder="2026-06-01T14:00:00Z" required /></label>
+              </div>
+              <div class="inline-grid">
+                <label><span>Freeze minutes</span><input type="number" name="freeze_minutes" value="0" min="0" /></label>
+                <label><span>Problem slugs (comma-sep)</span><input type="text" name="problem_slugs_str" placeholder="a-plus-b,even-odd,fibonacci" /></label>
+              </div>
+              <label class="checkbox-row"><input type="checkbox" name="is_public" checked /><span>Public</span></label>
+              <button class="primary-button" type="submit">Create contest</button>
+            </form>
+            <p class="feedback" id="contest-create-feedback"></p>
+          </article>
+          <article class="panel surface">
+            <div class="panel-heading"><p class="eyebrow">Tips</p><h2>Contest setup guide</h2></div>
+            <div class="stack-notes">
+              <div class="note-card"><strong>Timing</strong><p>Use ISO 8601 format: 2026-06-01T12:00:00Z. Times must be in UTC.</p></div>
+              <div class="note-card"><strong>Freeze</strong><p>Set freeze_minutes to freeze the leaderboard N minutes before end. 0 = no freeze.</p></div>
+              <div class="note-card"><strong>Problems</strong><p>Comma-separated slugs. Must already exist in the problem bank.</p></div>
+            </div>
           </article>
         </section>
 

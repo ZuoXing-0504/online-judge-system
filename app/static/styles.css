@@ -911,6 +911,60 @@ textarea {
   width: 80%;
 }
 
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: rgba(26, 140, 132, 0.1);
+  border-color: rgba(26, 140, 132, 0.3);
+}
+
+.pagination-btn.active {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+  font-weight: 700;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pagination-ellipsis {
+  padding: 0 4px;
+  color: var(--muted);
+}
+
+.pagination-info {
+  margin-left: 10px;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
 .empty-state {
   padding: 18px;
   border-radius: var(--radius-lg);

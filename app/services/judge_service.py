@@ -9,6 +9,7 @@ from app.models.problem import Problem
 from app.models.submission import Submission
 from app.models.submission_test_result import SubmissionTestResult
 from app.models.test_case import TestCase
+from app.services import contest_service
 
 
 async def _do_judge(db: AsyncSession, submission_id: uuid.UUID) -> None:
@@ -54,6 +55,7 @@ async def _do_judge(db: AsyncSession, submission_id: uuid.UUID) -> None:
             expected_output=tc.expected_output,
             time_limit_ms=problem.time_limit_ms,
             memory_limit_kb=problem.memory_limit_kb,
+            language=submission.language,
         )
 
         test_result = SubmissionTestResult(
@@ -85,6 +87,7 @@ async def _do_judge(db: AsyncSession, submission_id: uuid.UUID) -> None:
     submission.max_memory_used_kb = max_mem
     submission.error_message = error_msg
     await db.commit()
+    await contest_service.update_contest_scores(db, submission)
 
 
 async def judge_submission(db: AsyncSession, submission_id: uuid.UUID) -> None:

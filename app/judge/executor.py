@@ -40,7 +40,14 @@ async def _execute_locally(
     expected_output: str,
     time_limit_ms: int,
     memory_limit_kb: int,
+    language: str = "python",
 ) -> ExecutionResult:
+    if language != "python":
+        return ExecutionResult(
+            status="runtime_error",
+            error_message=f"Local execution only supports Python (requested: {language}). Use Docker for multi-language judging.",
+        )
+
     timeout_sec = max(time_limit_ms / 1000.0, 0.1)
     preexec_fn = get_preexec_fn(timeout_sec, memory_limit_kb * 1024)
     creationflags = get_subprocess_flags()
@@ -99,10 +106,11 @@ async def _execute_locally(
 async def execute_test_case(
     code: str, input_data: str, expected_output: str,
     time_limit_ms: int, memory_limit_kb: int,
+    language: str = "python",
 ) -> ExecutionResult:
     if platform.system() == "Windows":
         return await _execute_locally(
-            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb, language
         )
 
     timeout_sec = (time_limit_ms / 1000.0) + 2.0
@@ -113,20 +121,20 @@ async def execute_test_case(
         client = _get_client()
     except DockerException:
         return await _execute_locally(
-            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb, language
         )
 
     try:
         start_time = time.perf_counter()
         container = client.containers.create(
             image="oj-sandbox:latest",
-            environment={"OJ_CODE": encoded_code},
+            environment={"OJ_CODE": encoded_code, "OJ_LANG": language},
             stdin_open=True,
             network_disabled=True,
             mem_limit=f"{memory_mb}m",
             nano_cpus=1_000_000_000,
             read_only=True,
-            tmpfs={"/tmp": "size=64m,noexec"},
+            tmpfs={"/tmp": "size=128m,exec"},
             cap_drop=["ALL"],
             security_opt=["no-new-privileges"],
         )
@@ -203,7 +211,7 @@ async def execute_test_case(
 
     except ImageNotFound:
         return await _execute_locally(
-            code, input_data, expected_output, time_limit_ms, memory_limit_kb
+            code, input_data, expected_output, time_limit_ms, memory_limit_kb, language
         )
     except DockerException as e:
         fallback = await _execute_locally(

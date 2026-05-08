@@ -3,17 +3,19 @@ import { state } from "../state.js";
 import { t, DEMO_PROBLEM_TRANSLATIONS } from "../i18n.js";
 import { escapeHtml, translateDifficulty, difficultyClass, showSkeleton } from "../ui.js";
 
+const PAGE_SIZE = 20;
+
 function localizeProblem(problem) {
   if (!problem) return problem;
   const translated = DEMO_PROBLEM_TRANSLATIONS[state.language]?.[problem.slug];
   return translated ? { ...problem, ...translated } : problem;
 }
 
-function renderProblemCard(problem, index) {
+function renderProblemCard(problem, globalIndex) {
   const localized = localizeProblem(problem);
   return `
     <a class="problem-card" href="/problem?slug=${encodeURIComponent(problem.slug)}" data-problem-link>
-      <strong><span class="problem-num">#${index + 1}</span> ${escapeHtml(localized.title)}</strong>
+      <strong><span class="problem-num">#${globalIndex}</span> ${escapeHtml(localized.title)}</strong>
       <p>${escapeHtml(problem.slug)}</p>
       <div class="meta-row">
         <span class="status-chip ${difficultyClass(problem.difficulty)}">${escapeHtml(translateDifficulty(problem.difficulty))}</span>
@@ -23,58 +25,90 @@ function renderProblemCard(problem, index) {
 }
 
 async function loadProblemsIntoState(search = "", difficulty = "", page = 1) {
-  const params = new URLSearchParams({ page: String(page), page_size: "100" });
+  const params = new URLSearchParams({ page: String(page), page_size: String(PAGE_SIZE) });
   if (search) params.set("search", search);
   if (difficulty) params.set("difficulty", difficulty);
-  const url = `/api/v1/problems?${params.toString()}`;
-  console.log("[problems] fetch:", url);
   try {
-    const resp = await apiFetch(url);
-    console.log("[problems] response total:", resp.total, "items:", resp.items?.length);
+    const resp = await apiFetch(`/api/v1/problems?${params.toString()}`);
     state.problems = resp.items || [];
     state.problemsTotal = resp.total || 0;
     state.problemsPage = resp.page || 1;
-  } catch (e) {
-    console.log("[problems] fetch error:", e);
+    state.problemsTotalPages = resp.total_pages || 1;
+  } catch {
     state.problems = [];
     state.problemsTotal = 0;
+    state.problemsPage = 1;
+    state.problemsTotalPages = 1;
   }
 }
 
-async function loadWithFilters() {
+async function loadWithFilters(page = 1) {
   const searchEl = document.getElementById("problem-search");
   const diffEl = document.getElementById("problem-difficulty");
   const search = searchEl?.value.trim() || "";
   const difficulty = diffEl?.value || "";
-  console.log("[problems] loadWithFilters — search:", JSON.stringify(search), "difficulty:", JSON.stringify(difficulty));
   showSkeleton("problem-list", 6);
-  await loadProblemsIntoState(search, difficulty);
+  await loadProblemsIntoState(search, difficulty, page);
   renderPage();
+}
+
+function renderPagination() {
+  const container = document.getElementById("pagination-container");
+  if (!container) return;
+  const page = state.problemsPage || 1;
+  const total = state.problemsTotalPages || 1;
+  if (total <= 1) { container.innerHTML = ""; return; }
+
+  let html = '<div class="pagination">';
+  html += `<button class="pagination-btn" data-page="${page - 1}" ${page <= 1 ? "disabled" : ""}>« Prev</button>`;
+
+  const start = Math.max(1, page - 2);
+  const end = Math.min(total, page + 2);
+  if (start > 1) html += `<button class="pagination-btn" data-page="1">1</button>`;
+  if (start > 2) html += `<span class="pagination-ellipsis">...</span>`;
+
+  for (let p = start; p <= end; p++) {
+    html += `<button class="pagination-btn ${p === page ? "active" : ""}" data-page="${p}">${p}</button>`;
+  }
+
+  if (end < total - 1) html += `<span class="pagination-ellipsis">...</span>`;
+  if (end < total) html += `<button class="pagination-btn" data-page="${total}">${total}</button>`;
+
+  html += `<button class="pagination-btn" data-page="${page + 1}" ${page >= total ? "disabled" : ""}>Next »</button>`;
+  html += `<span class="pagination-info">${page} / ${total} (${state.problemsTotal} total)</span>`;
+  html += "</div>";
+
+  container.innerHTML = html;
+  container.querySelectorAll(".pagination-btn:not([disabled])").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const p = parseInt(btn.dataset.page);
+      if (p >= 1 && p <= total) loadWithFilters(p);
+    });
+  });
 }
 
 function renderPage() {
   const list = document.getElementById("problem-list");
   const count = document.getElementById("problem-count");
-  console.log("[problems] renderPage — items:", state.problems.length, "total:", state.problemsTotal);
   if (count) count.textContent = t("problemsPage.resultCount", { count: state.problemsTotal || state.problems.length });
   if (!list) return;
   if (!state.problems.length) {
     list.innerHTML = `<div class="empty-state">${escapeHtml(t("problems.empty"))}</div>`;
-    return;
+  } else {
+    const offset = ((state.problemsPage || 1) - 1) * PAGE_SIZE;
+    list.innerHTML = state.problems.map((p, i) => renderProblemCard(p, offset + i + 1)).join("");
   }
-  list.innerHTML = state.problems.map((p, i) => renderProblemCard(p, i)).join("");
+  renderPagination();
 }
 
 export async function initProblemsPage() {
-  console.log("[problems] initProblemsPage");
   const search = document.getElementById("problem-search");
   const difficulty = document.getElementById("problem-difficulty");
   const refresh = document.getElementById("refresh-problems");
-  console.log("[problems] searchEl:", !!search, "diffEl:", !!difficulty, "refreshEl:", !!refresh);
-  if (search) search.addEventListener("input", debounce(loadWithFilters, 240));
-  if (difficulty) difficulty.addEventListener("change", loadWithFilters);
-  if (refresh) refresh.addEventListener("click", loadWithFilters);
-  await loadWithFilters();
+  if (search) search.addEventListener("input", debounce(() => loadWithFilters(1), 240));
+  if (difficulty) difficulty.addEventListener("change", () => loadWithFilters(1));
+  if (refresh) refresh.addEventListener("click", () => loadWithFilters(1));
+  await loadWithFilters(1);
 }
 
 function debounce(fn, delayMs) {

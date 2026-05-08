@@ -9,6 +9,7 @@ import { initProblemDetailPage, renderDetail } from "./pages/problem.js";
 import { initSubmitPage, renderSubmit } from "./pages/submit.js";
 import { initSubmissionsPage } from "./pages/submissions.js";
 import { initAdminPage } from "./pages/admin.js";
+import { initContestsPage } from "./pages/contests.js";
 
 const PAGE = document.body.dataset.page || "home";
 const DEFAULT_USER_PATH = "/portal";
@@ -17,7 +18,7 @@ const DEFAULT_ADMIN_PATH = "/admin";
 const PAGE_TO_NAV = {
   home: "home", auth: "auth", register: "auth",
   problems: "problems", "problem-detail": "problems",
-  submit: "submit", submissions: "submissions", admin: "admin",
+  submit: "submit", submissions: "submissions", admin: "admin", contests: "contests",
 };
 
 const PAGE_META = {
@@ -29,9 +30,10 @@ const PAGE_META = {
   submit: { title: "meta.submitTitle", description: "meta.submitDescription" },
   submissions: { title: "meta.submissionsTitle", description: "meta.submissionsDescription" },
   admin: { title: "meta.adminTitle", description: "meta.adminDescription" },
+  contests: { title: "Contests - Online Judge System", description: "Browse and join coding contests." },
 };
 
-const PROTECTED_PAGES = new Set(["home", "problems", "problem-detail", "submit", "submissions", "admin"]);
+const PROTECTED_PAGES = new Set(["home", "problems", "problem-detail", "submit", "submissions", "admin", "contests"]);
 const PROTECTED_PATHS = new Set(["/portal", "/problems", "/problem", "/submit", "/submissions", "/admin"]);
 
 // Init
@@ -206,6 +208,7 @@ async function initializePage() {
   if (PAGE === "submit") { initSubmitPage(); return; }
   if (PAGE === "submissions") { await initSubmissionsPage(); return; }
   if (PAGE === "admin") { await initAdminPage(); }
+  if (PAGE === "contests") { await initContestsPage(); }
 }
 
 function initTheme() {

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contests - Online Judge System</title>
+<meta id="page-description" name="description" content="Browse and join coding contests." />
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body data-page="contests" data-shell="user">
+<div class="app-shell">
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div><div class="ambient-grid"></div>
+  <header class="site-header">
+    <a class="brand" href="/portal"><span class="brand-mark">&lt;/&gt;</span><span class="brand-copy"><span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span><strong data-i18n="nav.brand">Online Judge System</strong></span></a>
+    <nav class="site-nav">
+      <a data-nav="home" href="/portal" data-i18n="nav.home">Home</a>
+      <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
+      <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
+      <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
+      <a data-nav="contests" href="/contests-page" class="active">Contests</a>
+    </nav>
+    <div class="header-tools">
+      <label class="language-picker"><span data-i18n="nav.language">Language</span><select id="language-select" aria-label="Language"></select></label>
+      <div class="session-panel">
+        <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
+        <div class="session-copy"><strong id="session-name" data-i18n="session.guest">Guest</strong><span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span></div>
+        <a class="secondary-button compact hidden" id="admin-entry" href="/admin" data-i18n="session.adminConsole">Admin console</a>
+        <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
+        <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
+      </div>
+    </div>
+  </header>
+  <main class="page-layout">
+    <section class="page-hero surface narrow">
+      <p class="eyebrow">Competitions</p>
+      <h1>Coding Contests</h1>
+      <p>Join timed contests, solve problems under pressure, and climb the leaderboard.</p>
+    </section>
+    <section class="content-grid two-one">
+      <article class="panel surface">
+        <div class="panel-heading split">
+          <div><p class="eyebrow">Active & Upcoming</p><h2>Contest list</h2></div>
+          <button class="secondary-button compact" id="refresh-contests" type="button">Refresh</button>
+        </div>
+        <div class="stack-list" id="contest-list"></div>
+      </article>
+      <aside class="panel surface">
+        <div class="panel-heading">
+          <p class="eyebrow">Detail</p><h2>Contest info</h2>
+        </div>
+        <div id="contest-detail"><div class="empty-state">Select a contest to view details and leaderboard.</div></div>
+      </aside>
+    </section>
+  </main>
+</div>
+<script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

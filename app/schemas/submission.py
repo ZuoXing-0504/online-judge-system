@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class SubmissionCreate(BaseModel):
     problem_slug: str
     code: str = Field(min_length=1, max_length=65536)
-    language: Literal["python"] = "python"
+    language: Literal["python", "cpp", "java"] = "python"
 
 
 class SubmissionList(BaseModel):
@@ -16,6 +16,7 @@ class SubmissionList(BaseModel):
     problem_id: uuid.UUID
     problem_slug: str = ""
     problem_title: str = ""
+    language: str = "python"
     status: str
     total_test_cases: int
     passed_test_cases: int

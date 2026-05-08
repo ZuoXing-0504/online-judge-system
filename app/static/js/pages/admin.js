@@ -6,9 +6,13 @@ import { showToast, setFeedback, escapeHtml, translateRole, formToJson } from ".
 export async function initAdminPage() {
   const problemForm = document.getElementById("problem-create-form");
   const testCaseForm = document.getElementById("test-case-form");
+  const solutionForm = document.getElementById("solution-form");
+  const contestForm = document.getElementById("contest-create-form");
   const refreshUsers = document.getElementById("refresh-users");
   if (problemForm) problemForm.addEventListener("submit", handleProblemCreate);
   if (testCaseForm) testCaseForm.addEventListener("submit", handleTestCaseCreate);
+  if (solutionForm) solutionForm.addEventListener("submit", handleSolutionSave);
+  if (contestForm) contestForm.addEventListener("submit", handleContestCreate);
   if (refreshUsers) refreshUsers.addEventListener("click", loadAdminUsers);
   renderGate();
   if (state.user?.role === "admin") await loadAdminUsers();
@@ -22,7 +26,7 @@ function renderGate() {
 }
 
 function setFormsDisabled(disabled) {
-  ["problem-create-form", "test-case-form"].forEach(id => {
+  ["problem-create-form", "test-case-form", "solution-form", "contest-create-form"].forEach(id => {
     const form = document.getElementById(id);
     if (!form) return;
     form.querySelectorAll("input, textarea, select, button").forEach(node => { node.disabled = disabled; });
@@ -92,6 +96,39 @@ function renderUsers() {
       await changeRole(userId, role);
     });
   });
+}
+
+async function handleSolutionSave(event) {
+  event.preventDefault();
+  const feedback = document.getElementById("solution-feedback");
+  try {
+    const payload = formToJson(event.currentTarget);
+    const slug = payload.problem_slug;
+    await apiFetch(`/api/v1/problems/${encodeURIComponent(slug)}`, {
+      method: "PUT",
+      body: JSON.stringify({ solution_code: payload.solution_code, solution_explanation: payload.solution_explanation || "" }),
+    }, true);
+    showToast(`Solution saved for ${slug}`, "success");
+    setFeedback(feedback, `Solution saved for ${slug}`, "success");
+  } catch (error) { setFeedback(feedback, error.message, "error"); }
+}
+
+async function handleContestCreate(event) {
+  event.preventDefault();
+  const feedback = document.getElementById("contest-create-feedback");
+  try {
+    const payload = formToJson(event.currentTarget);
+    const slugsStr = payload.problem_slugs_str || "";
+    const problem_slugs = slugsStr.split(",").map(s => s.trim()).filter(Boolean);
+    delete payload.problem_slugs_str;
+    payload.problem_slugs = problem_slugs;
+    payload.is_public = Boolean(payload.is_public);
+    payload.freeze_minutes = Number(payload.freeze_minutes || 0);
+    const created = await apiFetch("/api/v1/contests", { method: "POST", body: JSON.stringify(payload) }, true);
+    showToast(`Contest created: ${created.slug}`, "success");
+    setFeedback(feedback, `Contest "${created.slug}" created with ${problem_slugs.length} problems.`, "success");
+    event.currentTarget.reset();
+  } catch (error) { setFeedback(feedback, error.message, "error"); }
 }
 
 async function changeRole(userId, role) {

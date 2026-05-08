@@ -111,6 +111,10 @@ async def frontend_submissions():
 async def frontend_admin():
     return page_response("admin.html")
 
+@app.get("/contests-page", include_in_schema=False)
+async def frontend_contests():
+    return page_response("contests.html")
+
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():

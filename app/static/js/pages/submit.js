@@ -60,11 +60,12 @@ async function handleSubmit() {
   const feedback = document.getElementById("submit-feedback");
   const slug = document.getElementById("manual-problem-slug")?.value.trim() || "";
   const code = window.CodeEditor ? window.CodeEditor.getValue() : "";
+  const lang = document.getElementById("language-select-submit")?.value || "python";
   if (!isLoggedIn()) { setFeedback(feedback, t("editor.noAuth"), "error"); return; }
   if (!slug) { setFeedback(feedback, t("editor.slugRequired"), "error"); return; }
   try {
     const submission = await apiFetch("/api/v1/submissions", {
-      method: "POST", body: JSON.stringify({ problem_slug: slug, code, language: "python" }),
+      method: "POST", body: JSON.stringify({ problem_slug: slug, code, language: lang }),
     }, true);
     showToast(t("editor.queueSuccess", { id: submission.id }), "success");
     setFeedback(feedback, t("editor.queueSuccess", { id: submission.id }), "success");

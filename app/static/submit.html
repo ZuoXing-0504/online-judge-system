@@ -26,6 +26,7 @@
           <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
           <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
           <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
+          <a data-nav="contests" href="/contests-page">Contests</a>
         </nav>
         <div class="header-tools">
           <label class="language-picker">
@@ -64,6 +65,14 @@
             <label>
               <span data-i18n="editor.problemSlug">Problem slug</span>
               <input id="manual-problem-slug" type="text" data-i18n-placeholder="editor.problemSlugPlaceholder" placeholder="Enter a problem slug" />
+            </label>
+            <label>
+              <span>Language</span>
+              <select id="language-select-submit">
+                <option value="python">Python 3</option>
+                <option value="cpp">C++ (g++ 17)</option>
+                <option value="java">Java 21</option>
+              </select>
             </label>
             <div class="editor-stack">
               <span data-i18n="editor.codeEditor">Code editor</span>
