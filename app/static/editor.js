@@ -78,6 +78,7 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
 })();
 
 // Bind language selector change to reflect in editor
+if (typeof document !== "undefined" && document.addEventListener) {
 document.addEventListener("DOMContentLoaded", () => {
   const sel = document.getElementById("language-select-submit");
   if (sel) {
@@ -94,3 +95,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+} // if document check

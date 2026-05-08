@@ -15,9 +15,11 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         cookie_token = request.cookies.get(CSRF_COOKIE)
 
         if request.method not in CSRF_SAFE_METHODS and request.url.path not in CSRF_EXEMPT_PATHS:
-            header_token = request.headers.get(CSRF_HEADER)
-            if not cookie_token or not header_token or not secrets.compare_digest(cookie_token, header_token):
-                return Response("CSRF token mismatch", status_code=403)
+            # Skip CSRF check if Authorization header is present (Bearer tokens are CSRF-safe)
+            if not request.headers.get("Authorization"):
+                header_token = request.headers.get(CSRF_HEADER)
+                if not cookie_token or not header_token or not secrets.compare_digest(cookie_token, header_token):
+                    return Response("CSRF token mismatch", status_code=403)
 
         response = await call_next(request)
 
