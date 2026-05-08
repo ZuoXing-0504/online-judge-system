@@ -62,7 +62,7 @@ async def run_sample(
     problem = await problem_service.get_by_slug(db, slug)
     result = await db.execute(
         select(TestCaseModel)
-        .where(TestCaseModel.problem_id == problem.id, TestCaseModel.is_sample == True)
+        .where(TestCaseModel.problem_id == problem.id, TestCaseModel.is_sample)
         .order_by(TestCaseModel.order)
         .limit(1)
     )
