@@ -24,6 +24,15 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
 
     env:
       DATABASE_URL: postgresql+asyncpg://judge:judge_pass@localhost:5432/online_judge_test
@@ -39,10 +48,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - uses: supercharge/redis-github-action@1.8.0
-        with:
-          redis-image: redis:7-alpine
 
       - name: Install dependencies
         run: |
