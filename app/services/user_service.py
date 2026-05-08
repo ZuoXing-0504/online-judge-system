@@ -45,6 +45,16 @@ async def list_users(
     return list(result.scalars().all()), total
 
 
+async def change_password(db: AsyncSession, user: User, current_password: str, new_password: str) -> None:
+    from app.core.exceptions import BadRequestException
+    from app.core.security import hash_password, verify_password
+
+    if not verify_password(current_password, user.hashed_password):
+        raise BadRequestException("Current password is incorrect")
+    user.hashed_password = hash_password(new_password)
+    await db.commit()
+
+
 async def change_role(
     db: AsyncSession,
     user_id: str,

@@ -8,6 +8,12 @@ export async function apiFetch(path, options = {}, authenticated = false) {
   if ((authenticated || hasBearerToken()) && hasBearerToken()) {
     headers.set("Authorization", `Bearer ${state.token}`);
   }
+  // Inject CSRF token from cookie
+  const csrf = document.cookie.split("; ").find(r => r.startsWith("csrf_token="));
+  if (csrf && !["GET", "HEAD", "OPTIONS"].includes(options.method || "GET")) {
+    headers.set("X-CSRF-Token", csrf.split("=")[1]);
+  }
+
   const response = await fetch(path, {
     ...options,
     headers,

@@ -60,6 +60,14 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
       setValue(v) { view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v } }); },
       focus() { view.focus(); },
       _enhanced: true,
+      setLanguage(lang) {
+        // Reconfigure the editor's language extension
+        view.dispatch({
+          effects: view.state.reconfigure(
+            python() // Currently only Python; C++/Java use plain text
+          ),
+        });
+      },
     };
     console.log("[editor] CodeMirror upgrade complete");
     parent.classList.add("cm-ready");
@@ -68,3 +76,21 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
     ta.style.display = ""; // ensure visible
   }
 })();
+
+// Bind language selector change to reflect in editor
+document.addEventListener("DOMContentLoaded", () => {
+  const sel = document.getElementById("language-select-submit");
+  if (sel) {
+    sel.addEventListener("change", () => {
+      // Update template placeholder for C++/Java
+      const templates = {
+        python: "# Read from stdin, write to stdout\n# Problem slug: {slug}\ndef solve():\n    pass\n\nif __name__ == '__main__':\n    solve()",
+        cpp: "// Read from stdin, write to stdout\n// Problem slug: {slug}\n#include <iostream>\nint main() {\n    \n    return 0;\n}",
+        java: "// Read from stdin, write to stdout\n// Problem slug: {slug}\nimport java.util.*;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        \n    }\n}",
+      };
+      if (window.CodeEditor && window.CodeEditor._enhanced) {
+        window.CodeEditor.setLanguage(sel.value);
+      }
+    });
+  }
+});

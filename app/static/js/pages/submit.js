@@ -38,19 +38,16 @@ export function renderSubmit() {
 
 function loadCodeTemplate() {
   const slug = document.getElementById("manual-problem-slug")?.value.trim() || "problem-slug";
-  const code = [
-    "def solve() -> None:",
-    `    ${t("editor.templateLine1")}`,
-    `    ${t("editor.templateLine2", { slug })}`,
-    "    pass",
-    "",
-    'if __name__ == "__main__":',
-    "    solve()",
-  ].join("\n");
-  console.log("[submit] loadCodeTemplate — slug:", slug, "codeLen:", code.length, "CodeEditor:", !!window.CodeEditor, "enhanced:", window.CodeEditor?._enhanced);
+  const lang = document.getElementById("language-select-submit")?.value || "python";
+  const templates = {
+    python: ["def solve() -> None:", `    ${t("editor.templateLine1")}`, `    ${t("editor.templateLine2", { slug })}`, "    pass", "", 'if __name__ == "__main__":', "    solve()"].join("\n"),
+    cpp: ["#include <iostream>", "using namespace std;", "", "int main() {", `    // ${t("editor.templateLine1")}`, `    // ${t("editor.templateLine2", { slug })}`, "    ", "    return 0;", "}"].join("\n"),
+    java: ["import java.util.*;", "", `// ${t("editor.templateLine1")}`, `// ${t("editor.templateLine2", { slug })}`, "public class Main {", "    public static void main(String[] args) {", "        Scanner sc = new Scanner(System.in);", "        ", "    }", "}"].join("\n"),
+  };
+  const code = templates[lang] || templates.python;
+  console.log("[submit] loadCodeTemplate — slug:", slug, "lang:", lang);
   if (window.CodeEditor) {
     window.CodeEditor.setValue(code);
-    console.log("[submit] loadCodeTemplate — setValue done, current value:", window.CodeEditor.getValue().slice(0, 60));
   } else {
     console.log("[submit] loadCodeTemplate — ERROR: window.CodeEditor is undefined!");
   }

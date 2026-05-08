@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.database import engine
 from app.core.exceptions import AppException
 from app.core.logging import RequestIDMiddleware, setup_logging
+from app.core.csrf import CSRFMiddleware
 from app.core.rate_limit import limiter
 from app.core.redis import close_redis_pool
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -44,6 +45,7 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+app.add_middleware(CSRFMiddleware)
 app.add_middleware(RequestIDMiddleware)
 
 Instrumentator().instrument(app).expose(app, include_in_schema=False)
