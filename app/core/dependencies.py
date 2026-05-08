@@ -34,8 +34,8 @@ async def _resolve_user_from_token(token: str, db: AsyncSession) -> User:
         user_id: str | None = payload.get("sub")
         if user_id is None:
             raise UnauthorizedException("Invalid token")
-    except JWTError:
-        raise UnauthorizedException("Invalid token")
+    except JWTError as exc:
+        raise UnauthorizedException("Invalid token") from exc
 
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
