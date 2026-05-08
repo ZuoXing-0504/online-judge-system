@@ -1,0 +1,46 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/zuoxing-0504/online-judge
+  tag: latest
+  pullPolicy: IfNotPresent
+
+app:
+  port: 8000
+  resources:
+    limits: { cpu: "1", memory: "512Mi" }
+    requests: { cpu: "250m", memory: "256Mi" }
+
+worker:
+  replicaCount: 2
+  resources:
+    limits: { cpu: "1", memory: "512Mi" }
+    requests: { cpu: "250m", memory: "256Mi" }
+
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  database: online_judge
+  user: judge
+  password: judge_pass
+  storage: 20Gi
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  storage: 5Gi
+
+ingress:
+  enabled: true
+  host: judge.example.com
+  tlsSecret: judge-tls
+
+secrets:
+  secretKey: "change-me-in-production"
+
+config:
+  debug: "false"
+  jwtExpireMinutes: "30"
+  maxCodeLength: "65536"
+  maxOutputLength: "1048576"
+  concurrentJudgeJobs: "2"

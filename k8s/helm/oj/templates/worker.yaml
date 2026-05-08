@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "oj.fullname" . }}-worker
+  labels:
+    app: {{ include "oj.name" . }}-worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "oj.name" . }}-worker
+  template:
+    metadata:
+      labels:
+        app: {{ include "oj.name" . }}-worker
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["arq", "app.judge.worker.WorkerSettings"]
+          env:
+            - name: DATABASE_URL
+              value: "postgresql+asyncpg://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@postgres:5432/{{ .Values.postgres.database }}"
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: SECRET_KEY
+              value: {{ .Values.secrets.secretKey }}
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
