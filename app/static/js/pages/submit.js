@@ -50,9 +50,9 @@ function loadCodeTemplate() {
   const slug = document.getElementById("manual-problem-slug")?.value.trim() || "problem-slug";
   const lang = document.getElementById("language-select-submit")?.value || "python";
   const templates = {
-    python: ["def solve() -> None:", `    ${t("editor.templateLine1")}`, `    ${t("editor.templateLine2", { slug })}`, "    pass", "", 'if __name__ == "__main__":', "    solve()"].join("\n"),
-    cpp: ["#include <iostream>", "using namespace std;", "", "int main() {", `    // ${t("editor.templateLine1")}`, `    // ${t("editor.templateLine2", { slug })}`, "    ", "    return 0;", "}"].join("\n"),
-    java: ["import java.util.*;", "", `// ${t("editor.templateLine1")}`, `// ${t("editor.templateLine2", { slug })}`, "public class Main {", "    public static void main(String[] args) {", "        Scanner sc = new Scanner(System.in);", "        ", "    }", "}"].join("\n"),
+    python: ["def solve() -> None:", "    # Read from stdin, write to stdout", `    # Problem slug: ${slug}`, "    pass", "", 'if __name__ == "__main__":', "    solve()"].join("\n"),
+    cpp: ["#include <iostream>", "using namespace std;", "", "int main() {", "    // Read from stdin, write to stdout", `    // Problem slug: ${slug}`, "    ", "    return 0;", "}"].join("\n"),
+    java: ["import java.util.*;", "", "// Read from stdin, write to stdout", `// Problem slug: ${slug}`, "public class Main {", "    public static void main(String[] args) {", "        Scanner sc = new Scanner(System.in);", "        ", "    }", "}"].join("\n"),
   };
   const code = templates[lang] || templates.python;
   console.log("[submit] loadCodeTemplate — slug:", slug, "lang:", lang);
