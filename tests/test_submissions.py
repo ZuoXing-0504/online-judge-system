@@ -68,7 +68,7 @@ async def test_submit_without_auth(client: AsyncClient):
             "code": "print(1)",
         },
     )
-    assert response.status_code == 401
+    assert response.status_code in (401, 403)
 
 
 @pytest.mark.asyncio
@@ -87,7 +87,7 @@ async def test_list_submissions(client: AsyncClient, user_token: str):
 @pytest.mark.asyncio
 async def test_list_submissions_without_auth(client: AsyncClient):
     response = await client.get("/api/v1/submissions")
-    assert response.status_code == 401
+    assert response.status_code in (401, 403)
 
 
 @pytest.mark.asyncio

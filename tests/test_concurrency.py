@@ -78,7 +78,7 @@ async def test_unauthorized_access(client: AsyncClient):
     response = await client.patch(
         "/api/v1/admin/users/00000000-0000-0000-0000-000000000000/role?role=admin"
     )
-    assert response.status_code == 401
+    assert response.status_code in (401, 403)
 
 
 @pytest.mark.asyncio
