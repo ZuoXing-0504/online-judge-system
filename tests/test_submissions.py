@@ -118,7 +118,7 @@ async def test_submit_rejects_unsupported_language(client: AsyncClient, admin_to
         json={
             "problem_slug": "python-only",
             "code": "print(1)",
-            "language": "java",
+            "language": "ruby",
         },
         headers={"Authorization": f"Bearer {user_token}"},
     )
