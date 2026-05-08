@@ -13,6 +13,7 @@ venv/
 *.swp
 *.swo
 .pytest_cache/
+.codex_pytest_cache/
 .coverage
 htmlcov/
 *.log

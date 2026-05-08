@@ -1,4 +1,4 @@
-from fastapi import Depends, Request
+from fastapi import Depends, Request, WebSocket
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
 from sqlalchemy import select
@@ -18,6 +18,16 @@ def _resolve_token(request: Request, header_token: str | None = None) -> str | N
     return header_token or cookie_token
 
 
+def _resolve_websocket_token(websocket: WebSocket) -> str | None:
+    query_token = websocket.query_params.get("token")
+    auth_header = websocket.headers.get("authorization")
+    header_token = None
+    if auth_header and auth_header.lower().startswith("bearer "):
+        header_token = auth_header[7:]
+    cookie_token = websocket.cookies.get(COOKIE_KEY)
+    return query_token or header_token or cookie_token
+
+
 async def _resolve_user_from_token(token: str, db: AsyncSession) -> User:
     try:
         payload = decode_access_token(token)
@@ -32,6 +42,16 @@ async def _resolve_user_from_token(token: str, db: AsyncSession) -> User:
     if user is None or not user.is_active:
         raise UnauthorizedException("User not found or inactive")
     return user
+
+
+async def resolve_websocket_user(
+    websocket: WebSocket,
+    db: AsyncSession,
+) -> User:
+    resolved = _resolve_websocket_token(websocket)
+    if resolved is None:
+        raise UnauthorizedException("Not authenticated")
+    return await _resolve_user_from_token(resolved, db)
 
 
 async def get_current_user_optional(

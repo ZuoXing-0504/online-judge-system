@@ -3,11 +3,11 @@ import json
 import uuid
 
 from fastapi import APIRouter, Depends, Query, Request, WebSocket, WebSocketDisconnect
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.core.config import settings
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, resolve_websocket_user
+from app.core.exceptions import ForbiddenException, NotFoundException, UnauthorizedException
 from app.core.rate_limit import limiter
 from app.core.redis import get_redis_pool
 from app.models.submission import Submission
@@ -127,18 +127,36 @@ async def get_submission(
 async def submission_status_ws(
     websocket: WebSocket,
     submission_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
 ):
-    await websocket.accept()
+    try:
+        user = await resolve_websocket_user(websocket, db)
+        await submission_service.get_submission(db, submission_id, user)
+    except UnauthorizedException:
+        await websocket.close(code=4401, reason="Not authenticated")
+        return
+    except ForbiddenException:
+        await websocket.close(code=4403, reason="Cannot view this submission")
+        return
+    except NotFoundException:
+        await websocket.close(code=4404, reason="Submission not found")
+        return
 
-    from app.core.database import async_session_factory
+    await websocket.accept()
+    poll_session_factory = async_sessionmaker(
+        db.bind,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
 
     for _ in range(120):
         try:
-            async with async_session_factory() as db:
-                sub = await submission_service.get_submission_raw(db, submission_id)
-                if sub is None:
-                    await websocket.send_json({"error": "Submission not found"})
-                    return
+            async with poll_session_factory() as poll_db:
+                sub = await submission_service.get_submission(
+                    poll_db,
+                    submission_id,
+                    user,
+                )
 
                 detail = _build_detail(sub)
                 await websocket.send_json(
@@ -151,6 +169,11 @@ async def submission_status_ws(
             await asyncio.sleep(1)
         except WebSocketDisconnect:
             return
+        except ForbiddenException:
+            await websocket.close(code=4403, reason="Cannot view this submission")
+            return
+        except NotFoundException:
+            await websocket.send_json({"error": "Submission not found"})
+            return
         except Exception:
             await asyncio.sleep(1)
-

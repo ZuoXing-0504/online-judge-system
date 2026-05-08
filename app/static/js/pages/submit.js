@@ -1,5 +1,5 @@
 import { apiFetch } from "../api.js";
-import { isLoggedIn, state } from "../state.js";
+import { hasBearerToken, isLoggedIn, state } from "../state.js";
 import { t } from "../i18n.js";
 import { showToast, setFeedback, escapeHtml, translateStatus, statusClass } from "../ui.js";
 import { DEMO_PROBLEM_TRANSLATIONS } from "../i18n.js";
@@ -81,7 +81,8 @@ function watchSingleSubmission(submissionId) {
   if (card) { card.className = "empty-state"; card.textContent = `${t("submitPage.latestTitle")}: ${submissionId}`; }
 
   const proto = window.location.protocol === "https:" ? "wss" : "ws";
-  const url = `${proto}://${window.location.host}/api/v1/submissions/${submissionId}/ws`;
+  const tokenQuery = hasBearerToken() ? `?token=${encodeURIComponent(state.token)}` : "";
+  const url = `${proto}://${window.location.host}/api/v1/submissions/${submissionId}/ws${tokenQuery}`;
   const socket = new WebSocket(url);
   socket.onmessage = (event) => {
     try {
