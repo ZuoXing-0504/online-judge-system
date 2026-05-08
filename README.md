@@ -7,9 +7,9 @@
 
 A production-grade online code judge supporting Python, C++, and Java. Built for internship portfolio demonstration.
 
----
+> 支持 Python / C++ / Java 三种语言的在线代码评测系统，用于实习作品集展示。
 
-## Features
+---
 
 - **Multi-language judging** — Python, C++, Java execution in Docker sandboxes
 - **101 classic problems** — categorized by topic with official solutions
@@ -181,6 +181,78 @@ arq app.judge.worker.WorkerSettings
 # Run tests
 TEST_DATABASE_URL="postgresql+asyncpg://judge:judge_pass@localhost:5432/online_judge_test" pytest -v
 ```
+
+---
+
+## Chinese Guide / 中文指南
+
+### 快速开始
+
+```bash
+git clone https://github.com/ZuoXing-0504/online-judge-system.git
+cd online-judge-system
+docker compose up --build -d
+docker compose exec app python scripts/seed_problems.py      # 导入 101 道题
+docker compose exec app python scripts/seed_all_solutions.py  # 导入解析
+```
+
+打开浏览器: `http://localhost:8000/portal` | 默认管理员: `admin` / `admin123456`
+
+### 技术栈
+
+| 组件 | 技术 |
+|------|------|
+| Web 框架 | FastAPI 0.115 (异步) |
+| 数据库 | PostgreSQL 16 + SQLAlchemy 2.0 (async) |
+| 任务队列 | Redis 7 + ARQ 0.26 |
+| 判题沙箱 | Docker SDK + subprocess 回退 |
+| 前端 | 原生 JS (ES Modules), 零框架依赖, CodeMirror 6 编辑器 |
+| 监控 | Prometheus + 结构化 JSON 日志 |
+
+### 功能特性
+
+- 判题支持 Python / C++ / Java，Docker 沙箱隔离(network=none, read-only, drop caps)
+- 101 道经典算法题，全部配有详细解析和测试用例
+- 比赛系统: 报名、ICPC 罚时计分、封榜、倒计时、实时排行榜
+- 安全: 限流(slowapi)、CSRF Token、httpOnly Cookie、5次错误锁账户15分钟、审计日志、软删除
+- 前端: 8 页面 SPA、中英双语、柔光主题、PWA 离线支持
+- DevOps: Docker Compose 健康检查、GitHub Actions CI(83% 覆盖率)、K8s Helm Chart
+
+### 数据库表
+
+```
+users -+- problems (created_by)
+       |     +- test_cases (problem_id)
+       |     +- comments (problem_id)
+       |     +- contest_problems (problem_id)
+       +- submissions (user_id, problem_id)
+       |     +- submission_test_results (submission_id)
+       +- contest_participants (user_id, contest_id)
+       +- contest_submission_attempts (user_id, problem_id)
+       +- audit_logs (admin_id)
+       
+contests -+- contest_problems (contest_id)
+          +- contest_participants (contest_id)
+```
+
+### 项目结构
+
+```
+app/api/v1/    路由层 (auth, users, problems, submissions, admin, contests, comments)
+app/services/   业务层 (auth, user, problem, submission, judge, contest, audit)
+app/models/     数据层 (11 张表, UUID 主键, 软删除)
+app/judge/      判题引擎 (executor, comparator, sandbox, worker)
+app/static/     前端 (JS modules + HTML + CSS)
+tests/          69 测试, 83% 覆盖率
+```
+
+### 开发阶段摘要
+
+| 阶段 | 提交数 | 主要内容 |
+|------|--------|----------|
+| 第一阶段 | 3 | 核心架构: FastAPI + SQLAlchemy async + Docker Compose + 前端门户 |
+| 第二阶段 | 5 | 比赛系统 + C++/Java 多语言 + 测试覆盖 |
+| 第三阶段 | 12 | 安全加固(CSRF/锁账户/审计) + K8s + 评论区 + CI 全绿 |
 
 ---
 
