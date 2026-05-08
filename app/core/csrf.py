@@ -7,7 +7,7 @@ from fastapi import Request
 CSRF_COOKIE = "csrf_token"
 CSRF_HEADER = "X-CSRF-Token"
 CSRF_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
-CSRF_EXEMPT_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/health", "/metrics"}
+CSRF_EXEMPT_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/logout", "/api/v1/health", "/metrics"}
 
 def _is_csrf_exempt(path: str) -> bool:
     if path in CSRF_EXEMPT_PATHS:

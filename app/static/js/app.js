@@ -216,11 +216,11 @@ function initTheme() {
 }
 
 async function logout() {
-  try { await fetch("/api/v1/auth/logout", { method: "POST", credentials: "include" }); } catch {}
-  clearSession();
   stopAllPolling();
+  try { await apiFetch("/api/v1/auth/logout", { method: "POST" }); } catch {}
+  clearSession();
   showToast(t("auth.logoutSuccess"), "info");
-  window.setTimeout(() => { window.location.assign("/"); }, 100);
+  window.location.replace("/auth");
 }
 
 function stopAllPolling() {

@@ -111,3 +111,4 @@ function renderUserStats() {
       <div class="stat-card"><span>Accepted</span><strong>${accepted}</strong></div>
       <div class="stat-card"><span>Rate</span><strong>${Math.round(accepted / Math.max(1, state.submissions.length) * 100)}%</strong></div>
     </div>`;
+}
