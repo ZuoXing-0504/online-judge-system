@@ -9,12 +9,11 @@ if str(ROOT_DIR) not in sys.path:
 
 from sqlalchemy import or_, select
 
-from app.core.database import async_session_factory, ensure_database_schema, engine
+from app.core.database import async_session_factory
 from app.models.user import User
 
 
 async def promote_user(identity: str) -> None:
-    await ensure_database_schema(engine)
     async with async_session_factory() as session:
         result = await session.execute(
             select(User).where(or_(User.username == identity, User.email == identity))

@@ -9,7 +9,7 @@ if str(ROOT_DIR) not in sys.path:
 
 from sqlalchemy import select
 
-from app.core.database import async_session_factory, ensure_database_schema, engine
+from app.core.database import async_session_factory
 from app.core.security import hash_password
 from app.models.problem import Problem
 from app.models.test_case import TestCase
@@ -172,7 +172,6 @@ async def seed_problem(admin_id, payload: dict) -> tuple[str, str]:
 
 
 async def main() -> None:
-    await ensure_database_schema(engine)
     admin = await ensure_admin_user()
 
     created = 0
