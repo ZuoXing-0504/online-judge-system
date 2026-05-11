@@ -20,7 +20,26 @@ export function showToast(message, kind = "info") {
   toast.addEventListener("animationend", () => {
     if (toast.style.opacity === "0") toast.remove();
   });
+  return toast;
 }
+
+showToast.promise = function (promise, { loading, success, error }) {
+  const toast = showToast(loading, "info");
+  promise.then(() => {
+    if (toast.parentNode) toast.remove();
+    showToast(success, "success");
+  }).catch((e) => {
+    if (toast.parentNode) toast.remove();
+    showToast(error || e.message, "error");
+  });
+};
+
+showToast.undo = function (message, undoAction, duration = 5000) {
+  const toast = showToast(message + " (Undo)", "warning");
+  toast.style.cursor = "pointer";
+  toast.addEventListener("click", () => { undoAction(); toast.remove(); });
+  setTimeout(() => { if (toast.parentNode) toast.remove(); }, duration);
+};
 
 export function setFeedback(node, message, kind = "") {
   if (!node) return;

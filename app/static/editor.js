@@ -42,16 +42,15 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
 
 (async function upgrade() {
   try {
-    console.log("[editor] fetching CodeMirror from CDN...");
-    const base = "https://esm.sh";
+    console.log("[editor] loading CodeMirror...");
     const [viewMod, langPy, langCpp, langJava, cmdMod, cmMod, stateMod] = await Promise.all([
-      import(`${base}/@codemirror/view@6`),
-      import(`${base}/@codemirror/lang-python@6`),
-      import(`${base}/@codemirror/lang-cpp@6`),
-      import(`${base}/@codemirror/lang-java@6`),
-      import(`${base}/@codemirror/commands@6`),
-      import(`${base}/codemirror@6`),
-      import(`${base}/@codemirror/state@6`),
+      import("codemirror"),
+      import("@codemirror/lang-python"),
+      import("@codemirror/lang-cpp"),
+      import("@codemirror/lang-java"),
+      import("@codemirror/commands"),
+      import("@codemirror/view"),
+      import("@codemirror/state"),
     ]);
     const { EditorView, keymap } = viewMod;
     const { python } = langPy;

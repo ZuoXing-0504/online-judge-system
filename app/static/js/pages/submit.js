@@ -70,9 +70,19 @@ async function handleSubmit() {
   const lang = document.getElementById("language-select-submit")?.value || "python";
   if (!isLoggedIn()) { setFeedback(feedback, t("editor.noAuth"), "error"); return; }
   if (!slug) { setFeedback(feedback, t("editor.slugRequired"), "error"); return; }
+  const payload = { problem_slug: slug, code, language: lang };
+  if (_contestSlug) payload.contest_slug = _contestSlug;
+
+  // Offline queue
+  if (!navigator.onLine) {
+    const queue = JSON.parse(localStorage.getItem("oj_offline_queue") || "[]");
+    queue.push({ ts: Date.now(), payload });
+    localStorage.setItem("oj_offline_queue", JSON.stringify(queue));
+    showToast("Saved offline. Will submit when back online.", "warning");
+    return;
+  }
+
   try {
-    const payload = { problem_slug: slug, code, language: lang };
-    if (_contestSlug) payload.contest_slug = _contestSlug;
     const submission = await apiFetch("/api/v1/submissions", {
       method: "POST", body: JSON.stringify(payload),
     }, true);
@@ -130,3 +140,21 @@ function stopPolling() {
   else clearInterval(state.pollTimer);
   state.pollTimer = null;
 }
+
+// Offline queue flush
+async function flushOfflineQueue() {
+  const raw = localStorage.getItem("oj_offline_queue");
+  if (!raw) return;
+  const queue = JSON.parse(raw);
+  if (!queue.length) return;
+  showToast(`Submitting ${queue.length} queued solution(s)...`, "info");
+  for (const item of queue) {
+    try {
+      await apiFetch("/api/v1/submissions", { method: "POST", body: JSON.stringify(item.payload) }, true);
+    } catch {}
+  }
+  localStorage.removeItem("oj_offline_queue");
+  showToast("Queued submissions sent!", "success");
+}
+window.addEventListener("online", flushOfflineQueue);
+if (navigator.onLine) flushOfflineQueue();
