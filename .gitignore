@@ -18,3 +18,4 @@ venv/
 htmlcov/
 *.log
 postgres_data/
+node_modules/

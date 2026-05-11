@@ -1,0 +1,27 @@
+{
+  "name": "online-judge",
+  "version": "1.0.0",
+  "description": "[![Test](https://github.com/ZuoXing-0504/online-judge-system/actions/workflows/test.yml/badge.svg)](https://github.com/ZuoXing-0504/online-judge-system/actions/workflows/test.yml) [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZuoXing-0504/online-judge-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ZuoXing-0504/online-judge-system/issues"
+  },
+  "homepage": "https://github.com/ZuoXing-0504/online-judge-system#readme",
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
+}

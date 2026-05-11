@@ -3,8 +3,37 @@ console.log("[editor] #code-editor found:", !!ta, "tag:", ta?.tagName);
 
 if (!ta || ta.tagName !== "TEXTAREA") throw new Error("Missing #code-editor textarea");
 
+// Chinese punctuation to English mapping for code editor
+const PUNCT_MAP = {
+  ",": ",", "，": ",", ".": ".", "。": ".", ";": ";", "；": ";",
+  ":": ":", "：": ":", "!": "!", "！": "!", "?": "?", "？": "?",
+  "(": "(", "（": "(", ")": ")", "）": ")",
+  "[": "[", "【": "[", "]": "]", "】": "]",
+  "{": "{", "｛": "{", "}": "}", "｝": "}",
+  "'": "'", "'": "'", "'": "'", "\"": "\"", "\"": "\"", "\"": "\"",
+  "<": "<", "《": "<", ">": ">", "》": ">",
+  "=": "=", "＝": "=", "+": "+", "＋": "+", "-": "-", "－": "-",
+  "*": "*", "＊": "*", "/": "/", "／": "/", "%": "%", "％": "%",
+  " ": " ", " ": " ",
+};
+const PUNCT_RE = new RegExp("[" + Object.keys(PUNCT_MAP).join("") + "]", "g");
+
+function normalizePunctuation(text) {
+  return text.replace(PUNCT_RE, (ch) => PUNCT_MAP[ch] || ch);
+}
+
+ta.addEventListener("input", () => {
+  const before = ta.value;
+  const after = normalizePunctuation(before);
+  if (after !== before) {
+    const cursor = ta.selectionStart;
+    ta.value = after;
+    ta.selectionStart = ta.selectionEnd = cursor;
+  }
+});
+
 window.CodeEditor = {
-  getValue() { return ta.value; },
+  getValue() { return normalizePunctuation(ta.value); },
   setValue(v) { ta.value = v; },
   focus() { ta.focus(); },
   _enhanced: false,
@@ -62,7 +91,7 @@ console.log("[editor] window.CodeEditor set (textarea fallback)");
     ta.style.display = "none";
 
     window.CodeEditor = {
-      getValue() { return view.state.doc.toString(); },
+      getValue() { return normalizePunctuation(view.state.doc.toString()); },
       setValue(v) { view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v } }); },
       focus() { view.focus(); },
       _enhanced: true,
