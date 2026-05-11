@@ -34,7 +34,7 @@ async def test_frontend_pages_served(frontend_client: AsyncClient, route: str, m
     assert "text/html" in response.headers["content-type"]
     assert 'id="language-select"' in response.text
     assert marker in response.text
-    assert 'src="/static/js/app.js"' in response.text
+    assert 'src="/static/js/bundle.js"' in response.text
 
 
 @pytest.mark.asyncio

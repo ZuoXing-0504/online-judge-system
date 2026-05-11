@@ -1,7 +1,6 @@
-const esbuild = require("esbuild");
+import esbuild from "esbuild";
 
 async function build() {
-  // Main app bundle
   await esbuild.build({
     entryPoints: ["app/static/js/app.js"],
     bundle: true,
@@ -11,7 +10,6 @@ async function build() {
     sourcemap: true,
     target: "es2020",
   });
-  // Editor (submit page)
   await esbuild.build({
     entryPoints: ["app/static/editor.js"],
     bundle: true,
