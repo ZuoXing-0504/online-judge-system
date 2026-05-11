@@ -156,5 +156,7 @@ async function flushOfflineQueue() {
   localStorage.removeItem("oj_offline_queue");
   showToast("Queued submissions sent!", "success");
 }
-window.addEventListener("online", flushOfflineQueue);
-if (navigator.onLine) flushOfflineQueue();
+if (typeof window !== "undefined" && window.addEventListener) {
+  window.addEventListener("online", flushOfflineQueue);
+  if (navigator.onLine) flushOfflineQueue();
+}
