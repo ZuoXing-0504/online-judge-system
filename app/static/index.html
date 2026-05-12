@@ -1,134 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Online Judge System</title>
-    <meta
-      id="page-description"
-      name="description"
-      content="A multi-page online judge frontend for browsing problems, submitting solutions, reviewing verdicts, and managing content."
-    />
-    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/static/styles.css" />
-  </head>
-  <body data-page="home" data-shell="user">
-    <div class="app-shell">
-      <div class="ambient ambient-a"></div>
-      <div class="ambient ambient-b"></div>
-      <div class="ambient-grid"></div>
-
-      <header class="site-header">
-        <a class="brand" href="/portal">
-          <span class="brand-mark">&lt;/&gt;</span>
-          <span class="brand-copy">
-            <span class="eyebrow" data-i18n="nav.stack">FastAPI + Redis + PostgreSQL</span>
-            <strong data-i18n="nav.brand">Online Judge System</strong>
-          </span>
-        </a>
-
-        <nav class="site-nav">
-          <a data-nav="home" href="/portal" data-i18n="nav.home">Home</a>
-          <a data-nav="problems" href="/problems" data-i18n="nav.problems">Problems</a>
-          <a data-nav="submit" href="/submit" data-i18n="nav.submit">Submit</a>
-          <a data-nav="submissions" href="/submissions" data-i18n="nav.submissions">Submissions</a>
-          <a data-nav="contests" href="/contests-page">Contests</a>
-        </nav>
-
-        <div class="header-tools">
-          <label class="language-picker">
-            <span data-i18n="nav.language">Language</span>
-            <select id="language-select" aria-label="Language"></select>
-          </label>
-
-          <div class="session-panel">
-            <span class="status-chip neutral" id="health-pill" data-i18n="health.checking">Checking API</span>
-            <div class="session-copy">
-              <strong id="session-name" data-i18n="session.guest">Guest</strong>
-              <span id="session-role" data-i18n="session.guestHint">Browse public features without signing in.</span>
-            </div>
-            <a class="secondary-button compact hidden" id="admin-entry" href="/admin" data-i18n="session.adminConsole">Admin console</a>
-            <a class="secondary-button compact" id="auth-link" href="/auth" data-i18n="session.signIn">Sign in</a>
-            <button class="secondary-button compact hidden" id="logout-button" type="button" data-i18n="session.logout">Log out</button>
-          </div>
-        </div>
-      </header>
-
-      <main class="page-layout">
-        <section class="hero-panel surface">
-          <div class="hero-copy">
-            <p class="eyebrow" data-i18n="home.eyebrow">Multi-page control room</p>
-            <h1 data-i18n="home.title">A cleaner judge frontend, split by workflow instead of stacking everything into one screen.</h1>
-            <p class="hero-text" data-i18n="home.text">
-              Jump into the exact page you need: sign in, browse problems, read statements, submit code, inspect verdicts, or manage content.
-            </p>
-            <div class="hero-actions">
-              <a class="primary-button" href="/problems" data-i18n="home.ctaProblems">Explore problems</a>
-              <a class="secondary-button" href="/submit" data-i18n="home.ctaSubmit">Open submit page</a>
-            </div>
-          </div>
-
-          <div class="metrics-grid">
-            <article class="metric-card">
-              <span data-i18n="metrics.api">API status</span>
-              <strong id="metric-api">Booting</strong>
-            </article>
-            <article class="metric-card">
-              <span data-i18n="metrics.problems">Public problems</span>
-              <strong id="metric-problems">0</strong>
-            </article>
-            <article class="metric-card">
-              <span data-i18n="metrics.submissions">Recent submissions</span>
-              <strong id="metric-submissions">0</strong>
-            </article>
-            <article class="metric-card">
-              <span data-i18n="metrics.session">Session</span>
-              <strong id="metric-session" data-i18n="session.guest">Guest</strong>
-            </article>
-          </div>
-        </section>
-
-        <section class="content-grid two-one">
-          <article class="panel surface">
-            <div class="panel-heading split">
-              <div>
-                <p class="eyebrow" data-i18n="home.featuredEyebrow">Featured problems</p>
-                <h2 data-i18n="home.featuredTitle">Start from a public problem</h2>
-              </div>
-              <a class="ghost-link" href="/problems" data-i18n="home.viewAll">View all</a>
-            </div>
-            <div class="stack-list" id="featured-problems"></div>
-            <div id="user-stats" style="display:none;margin-top:18px"></div>
-          </article>
-
-          <article class="panel surface">
-            <div class="panel-heading">
-              <p class="eyebrow" data-i18n="home.pagesEyebrow">Pages</p>
-              <h2 data-i18n="home.pagesTitle">One workflow per page</h2>
-            </div>
-            <div class="page-links">
-              <a class="quick-link" href="/problems">
-                <strong data-i18n="nav.problems">Problems</strong>
-                <span data-i18n="home.pageProblems">Filter and browse the public problem archive.</span>
-              </a>
-              <a class="quick-link" href="/problem?slug=sum-two-numbers">
-                <strong data-i18n="home.pageStatementTitle">Statement</strong>
-                <span data-i18n="home.pageStatement">Read one problem deeply on a dedicated detail page.</span>
-              </a>
-              <a class="quick-link" href="/submit">
-                <strong data-i18n="nav.submit">Submit</strong>
-                <span data-i18n="home.pageSubmit">Focus only on code, target selection, and queueing.</span>
-              </a>
-              <a class="quick-link" href="/submissions">
-                <strong data-i18n="nav.submissions">Submissions</strong>
-                <span data-i18n="home.pageSubmissions">Review verdict history and drill into test results.</span>
-              </a>
-            </div>
-          </article>
-        </section>
-      </main>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Online Judge</title>
+<meta name="description" content="Online code judge - browse problems and submit solutions." />
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body data-page="home" data-shell="user">
+<div class="app-shell">
+<header class="site-header">
+  <a class="brand" href="/portal"><span class="brand-mark">&lt;/&gt;</span><span class="brand-copy"><strong>Online Judge</strong></span></a>
+  <nav class="site-nav">
+    <a data-nav="home" href="/portal">Home</a>
+    <a data-nav="problems" href="/problems">Problems</a>
+    <a data-nav="submit" href="/submit">Submit</a>
+    <a data-nav="submissions" href="/submissions">Submissions</a>
+    <a data-nav="contests" href="/contests-page">Contests</a>
+  </nav>
+  <div class="header-tools">
+    <div class="session-panel">
+      <div class="session-copy"><strong id="session-name">Guest</strong><span id="session-role">Sign in to get started.</span></div>
+      <a class="secondary-button compact hidden" id="admin-entry" href="/admin">Admin</a>
+      <a class="secondary-button compact" id="auth-link" href="/auth">Sign in</a>
+      <button class="secondary-button compact hidden" id="logout-button" type="button">Log out</button>
     </div>
+  </div>
+</header>
+<main class="page-layout">
+  <div class="hero-bar">
+    <h1>Online Judge</h1>
+    <div class="hero-actions">
+      <a class="primary-button" href="/problems">Problems</a>
+      <a class="secondary-button" href="/submit">Submit code</a>
+    </div>
+  </div>
 
-    <script type="module" src="/static/js/bundle.js"></script>
-  </body>
+  <section class="panel surface" id="featured-section">
+    <div class="panel-heading split">
+      <h2>Problems</h2>
+      <a class="ghost-link" href="/problems">View all</a>
+    </div>
+    <div class="stack-list" id="featured-problems"></div>
+    <div id="user-stats" style="display:none;margin-top:16px"></div>
+  </section>
+</main>
+</div>
+<script type="module" src="/static/js/bundle.js"></script>
+</body>
 </html>

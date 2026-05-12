@@ -47,61 +47,20 @@
       </header>
 
       <main class="page-layout">
-        <section class="page-hero surface narrow">
-          <p class="eyebrow" data-i18n="problemsPage.eyebrow">Problem archive</p>
-          <h1 data-i18n="problemsPage.title">Browse problems on their own page.</h1>
-          <p data-i18n="problemsPage.text">Search, filter, and open statements without mixing editor, login, or verdict panels into the same screen.</p>
-        </section>
-
-        <section class="content-grid two-one">
-          <article class="panel surface">
-            <div class="panel-heading split">
-              <div>
-                <p class="eyebrow" data-i18n="problemsPage.filtersEyebrow">Filters</p>
-                <h2 data-i18n="problemsPage.filtersTitle">Search the public catalog</h2>
-              </div>
-              <button class="secondary-button compact" id="refresh-problems" type="button" data-i18n="common.refresh">Refresh</button>
+        <div class="hero-bar">
+          <h1>Problems</h1>
+        </div>
+        <section class="panel surface">
+          <div class="panel-heading split">
+            <div class="filter-grid" style="grid-template-columns:1fr 140px auto;align-items:end">
+              <label><span>Search</span><input id="problem-search" type="search" placeholder="Search by title or slug" /></label>
+              <label><span>Difficulty</span><select id="problem-difficulty"><option value="">All</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></label>
+              <button class="secondary-button compact" id="refresh-problems" type="button">Refresh</button>
             </div>
-            <div class="filter-grid">
-              <label>
-                <span data-i18n="problems.search">Search</span>
-                <input id="problem-search" type="search" data-i18n-placeholder="problems.searchPlaceholder" placeholder="Find by title" />
-              </label>
-              <label>
-                <span data-i18n="problems.difficulty">Difficulty</span>
-                <select id="problem-difficulty">
-                  <option value="" data-i18n="problems.all">All</option>
-                  <option value="easy" data-i18n="difficulty.easy">Easy</option>
-                  <option value="medium" data-i18n="difficulty.medium">Medium</option>
-                  <option value="hard" data-i18n="difficulty.hard">Hard</option>
-                </select>
-              </label>
-            </div>
-            <p class="mini-copy" id="problem-count">0</p>
-            <div class="stack-list" id="problem-list"></div>
-            <div id="pagination-container"></div>
-          </article>
-
-          <aside class="panel surface">
-            <div class="panel-heading">
-              <p class="eyebrow" data-i18n="problemsPage.sideEyebrow">Workflow</p>
-              <h2 data-i18n="problemsPage.sideTitle">Suggested next steps</h2>
-            </div>
-            <div class="stack-notes">
-              <div class="note-card">
-                <strong data-i18n="problemsPage.stepOneTitle">1. Open a statement</strong>
-                <p data-i18n="problemsPage.stepOneText">Click any problem card to move into a dedicated detail page.</p>
-              </div>
-              <div class="note-card">
-                <strong data-i18n="problemsPage.stepTwoTitle">2. Jump to submit</strong>
-                <p data-i18n="problemsPage.stepTwoText">From the detail page, move to the submit page with the slug already filled.</p>
-              </div>
-              <div class="note-card">
-                <strong data-i18n="problemsPage.stepThreeTitle">3. Review verdicts</strong>
-                <p data-i18n="problemsPage.stepThreeText">Use the submissions page to inspect detailed test outcomes.</p>
-              </div>
-            </div>
-          </aside>
+          </div>
+          <p class="mini-copy" id="problem-count"></p>
+          <div class="stack-list" id="problem-list"></div>
+          <div id="pagination-container"></div>
         </section>
       </main>
     </div>

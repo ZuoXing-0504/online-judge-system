@@ -85,17 +85,7 @@ export async function initHomePage() {
 }
 
 export function renderHomeState() {
-  const metricApi = document.getElementById("metric-api");
-  const metricProblems = document.getElementById("metric-problems");
-  const metricSubmissions = document.getElementById("metric-submissions");
-  const metricSession = document.getElementById("metric-session");
-  const featuredProblems = document.getElementById("featured-problems");
-
-  if (metricApi) metricApi.textContent = state.apiHealth === "healthy" ? t("health.healthy") : state.apiHealth === "offline" ? t("health.offline") : t("health.booting");
-  if (metricProblems) metricProblems.textContent = String(state.problems.length);
-  if (metricSubmissions) metricSubmissions.textContent = String(state.submissions.length);
-  if (metricSession) metricSession.textContent = state.user ? translateRole(state.user.role) : t("session.guest");
-  renderFeaturedProblems(featuredProblems);
+  renderFeaturedProblems(document.getElementById("featured-problems"));
   renderUserStats();
 }
 

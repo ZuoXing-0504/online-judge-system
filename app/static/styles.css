@@ -1159,3 +1159,14 @@ html[dir="rtl"] .toolbar-row {
   transition: all 0.2s;
 }
 #theme-toggle:hover { background: var(--bg-alt); }
+
+/* Simplified hero */
+.hero-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0 8px;
+}
+.hero-bar h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
