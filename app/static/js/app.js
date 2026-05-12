@@ -212,7 +212,27 @@ async function initializePage() {
 }
 
 function initTheme() {
-  document.documentElement.setAttribute("data-theme", "light");
+  const saved = localStorage.getItem("oj_theme") || "light";
+  applyTheme(saved);
+  // Inject theme toggle button
+  const tools = document.querySelector(".header-tools");
+  if (tools && !document.getElementById("theme-toggle")) {
+    const btn = document.createElement("button");
+    btn.id = "theme-toggle";
+    btn.textContent = saved === "dark" ? "☀️" : "🌙";
+    btn.title = "Toggle theme";
+    btn.addEventListener("click", () => {
+      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      applyTheme(next);
+      btn.textContent = next === "dark" ? "☀️" : "🌙";
+    });
+    tools.insertBefore(btn, tools.firstChild);
+  }
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("oj_theme", theme);
 }
 
 async function logout() {
