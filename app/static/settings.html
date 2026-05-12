@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Settings - Online Judge</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body data-page="settings" data-shell="user">
+<div class="app-shell">
+<header class="site-header">
+  <a class="brand" href="/portal"><span class="brand-mark">&lt;/&gt;</span><span class="brand-copy"><strong>Online Judge</strong></span></a>
+  <nav class="site-nav">
+    <a data-nav="home" href="/portal">Home</a>
+    <a data-nav="problems" href="/problems">Problems</a>
+    <a data-nav="submit" href="/submit">Submit</a>
+    <a data-nav="submissions" href="/submissions">Submissions</a>
+    <a data-nav="contests" href="/contests-page">Contests</a>
+  </nav>
+  <div class="header-tools">
+    <div class="session-panel">
+      <div class="session-copy"><strong id="session-name">Guest</strong><span id="session-role">Sign in.</span></div>
+      <a class="secondary-button compact hidden" id="admin-entry" href="/admin">Admin</a>
+      <a class="secondary-button compact" id="auth-link" href="/auth">Sign in</a>
+      <button class="secondary-button compact hidden" id="logout-button" type="button">Log out</button>
+    </div>
+  </div>
+</header>
+<main class="page-layout">
+  <div class="hero-bar"><h1>Settings</h1></div>
+  <section class="content-grid two-one">
+    <article class="panel surface">
+      <div class="panel-heading"><h2>Change password</h2></div>
+      <form class="stack-form" id="password-form">
+        <label><span>Current password</span><input type="password" name="current_password" required /></label>
+        <label><span>New password</span><input type="password" name="new_password" minlength="8" required /></label>
+        <button class="primary-button" type="submit">Update password</button>
+      </form>
+      <p class="feedback" id="password-feedback"></p>
+    </article>
+    <aside class="panel surface">
+      <div class="panel-heading"><h2>Account</h2></div>
+      <div id="account-info" class="stack-notes">
+        <div class="note-card"><strong>Username</strong><p id="settings-username">--</p></div>
+        <div class="note-card"><strong>Email</strong><p id="settings-email">--</p></div>
+        <div class="note-card"><strong>Role</strong><p id="settings-role">--</p></div>
+        <div class="note-card"><strong>Joined</strong><p id="settings-joined">--</p></div>
+      </div>
+    </aside>
+  </section>
+</main>
+</div>
+<script type="module" src="/static/js/bundle.js"></script>
+</body>
+</html>

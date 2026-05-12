@@ -10,6 +10,8 @@ import { initSubmitPage, renderSubmit } from "./pages/submit.js";
 import { initSubmissionsPage } from "./pages/submissions.js";
 import { initAdminPage } from "./pages/admin.js";
 import { initContestsPage } from "./pages/contests.js";
+import { initSettingsPage } from "./pages/settings.js";
+import { initLeaderboardPage } from "./pages/leaderboard.js";
 
 const PAGE = document.body.dataset.page || "home";
 const DEFAULT_USER_PATH = "/portal";
@@ -18,7 +20,7 @@ const DEFAULT_ADMIN_PATH = "/admin";
 const PAGE_TO_NAV = {
   home: "home", auth: "auth", register: "auth",
   problems: "problems", "problem-detail": "problems",
-  submit: "submit", submissions: "submissions", admin: "admin", contests: "contests",
+  submit: "submit", submissions: "submissions", admin: "admin", contests: "contests", settings: "settings", leaderboard: "leaderboard",
 };
 
 const PAGE_META = {
@@ -30,10 +32,12 @@ const PAGE_META = {
   submit: { title: "meta.submitTitle", description: "meta.submitDescription" },
   submissions: { title: "meta.submissionsTitle", description: "meta.submissionsDescription" },
   admin: { title: "meta.adminTitle", description: "meta.adminDescription" },
-  contests: { title: "Contests - Online Judge System", description: "Browse and join coding contests." },
+  contests: { title: "Contests - Online Judge", description: "Browse and join coding contests." },
+  settings: { title: "Settings - Online Judge", description: "Manage your account." },
+  leaderboard: { title: "Leaderboard - Online Judge", description: "View contest rankings." },
 };
 
-const PROTECTED_PAGES = new Set(["home", "problems", "problem-detail", "submit", "submissions", "admin", "contests"]);
+const PROTECTED_PAGES = new Set(["home", "problems", "problem-detail", "submit", "submissions", "admin", "contests", "settings", "leaderboard"]);
 const PROTECTED_PATHS = new Set(["/portal", "/problems", "/problem", "/submit", "/submissions", "/admin"]);
 
 // Init
@@ -183,6 +187,20 @@ function syncHeader() {
   if (authLink) { authLink.textContent = loggedIn ? t("session.account") : t("session.signIn"); authLink.href = loggedIn ? (state.user?.role === "admin" ? DEFAULT_ADMIN_PATH : DEFAULT_USER_PATH) : "/"; authLink.classList.toggle("hidden", false); }
   if (adminEntry) adminEntry.classList.toggle("hidden", !(loggedIn && state.user?.role === "admin"));
   if (logoutBtn) logoutBtn.classList.toggle("hidden", !loggedIn);
+
+  // Settings gear
+  let gear = document.getElementById("settings-link");
+  if (!gear && loggedIn) {
+    gear = document.createElement("a");
+    gear.id = "settings-link";
+    gear.href = "/settings";
+    gear.textContent = "⚙";
+    gear.title = "Settings";
+    gear.style.cssText = "font-size:1.2rem;text-decoration:none;margin-right:6px";
+    const tools = document.querySelector(".header-tools");
+    if (tools) tools.insertBefore(gear, tools.querySelector(".session-panel"));
+  }
+  if (gear) gear.style.display = loggedIn ? "" : "none";
 }
 
 async function loadHealth() {
@@ -209,6 +227,8 @@ async function initializePage() {
   if (PAGE === "submissions") { await initSubmissionsPage(); return; }
   if (PAGE === "admin") { await initAdminPage(); }
   if (PAGE === "contests") { await initContestsPage(); }
+  if (PAGE === "settings") { await initSettingsPage(); }
+  if (PAGE === "leaderboard") { await initLeaderboardPage(); }
 }
 
 function initTheme() {

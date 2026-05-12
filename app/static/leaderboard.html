@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Leaderboard</title><link rel="icon" href="/static/favicon.svg" type="image/svg+xml" /><link rel="stylesheet" href="/static/styles.css" />
+</head><body data-page="leaderboard" data-shell="user"><div class="app-shell">
+<header class="site-header">
+  <a class="brand" href="/portal"><span class="brand-mark">&lt;/&gt;</span><span class="brand-copy"><strong>Online Judge</strong></span></a>
+  <nav class="site-nav"><a data-nav="home" href="/portal">Home</a><a data-nav="problems" href="/problems">Problems</a><a data-nav="submit" href="/submit">Submit</a><a data-nav="submissions" href="/submissions">Submissions</a><a data-nav="contests" href="/contests-page">Contests</a></nav>
+  <div class="header-tools">
+    <div class="session-panel"><div class="session-copy"><strong id="session-name">Guest</strong><span id="session-role">Sign in.</span></div>
+    <a class="secondary-button compact hidden" id="admin-entry" href="/admin">Admin</a><a class="secondary-button compact" id="auth-link" href="/auth">Sign in</a><button class="secondary-button compact hidden" id="logout-button" type="button">Log out</button></div>
+  </div>
+</header>
+<main class="page-layout">
+  <div class="hero-bar"><h1>Leaderboard</h1></div>
+  <section class="panel surface">
+    <div class="panel-heading split">
+      <h2>Rankings</h2>
+      <select id="lb-contest" style="width:auto;min-width:200px"></select>
+    </div>
+    <div class="stack-list" id="lb-list"></div>
+  </section>
+</main>
+</div>
+<script type="module" src="/static/js/bundle.js"></script></body></html>
