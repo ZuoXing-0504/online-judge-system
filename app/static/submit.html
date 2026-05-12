@@ -47,44 +47,31 @@
       </header>
 
       <main class="page-layout">
-        <section class="page-hero surface narrow">
-          <p class="eyebrow" data-i18n="submitPage.eyebrow">Submission editor</p>
+        <div class="hero-bar">
           <h1>Submit</h1>
-        </section>
-
+          <a class="secondary-button compact" id="back-to-problem" href="/problems" style="display:none">Back to problem</a>
+        </div>
         <section class="content-grid two-one">
           <article class="panel surface">
             <div class="panel-heading split">
-              <div>
-                <p class="eyebrow" data-i18n="submitPage.formEyebrow">Editor</p>
-                <h2 data-i18n="submitPage.formTitle">Queue a new solution</h2>
-              </div>
-              <span class="status-chip neutral" id="editor-target" data-i18n="submitPage.noTarget">Target: none</span>
+              <h2>Editor</h2>
+              <span class="status-chip neutral" id="editor-target">Target: none</span>
               <span id="contest-banner" style="display:none;margin-left:8px"></span>
             </div>
-            <label>
-              <span data-i18n="editor.problemSlug">Problem slug</span>
-              <input id="manual-problem-slug" type="text" data-i18n-placeholder="editor.problemSlugPlaceholder" placeholder="Enter a problem slug" />
-            </label>
-            <label>
-              <span>Language</span>
-              <select id="language-select-submit">
-                <option value="python">Python 3</option>
-                <option value="cpp">C++ (g++ 17)</option>
-                <option value="java">Java 21</option>
-              </select>
-            </label>
-            <div class="editor-stack">
-              <span data-i18n="editor.codeEditor">Code editor</span>
-              <textarea id="code-editor" spellcheck="false" style="display:block;width:100%;min-height:420px;padding:16px;border-radius:var(--radius-lg);background:var(--input-bg);color:var(--text);font-family:monospace;border:1px solid var(--border);resize:vertical;line-height:1.7;font-size:0.95rem;">print("Ready to judge")</textarea>
+            <div style="display:flex;gap:12px;margin-bottom:12px">
+              <label style="flex:1"><span>Problem</span><input id="manual-problem-slug" type="text" placeholder="problem-slug" /></label>
+              <label style="width:140px"><span>Language</span><select id="language-select-submit"><option value="python">Python 3</option><option value="cpp">C++</option><option value="java">Java</option></select></label>
             </div>
-            <div class="toolbar-row">
-              <span class="mini-copy" id="editor-hint" data-i18n="editor.loginHint">Login to unlock submissions.</span>
+            <textarea id="code-editor" spellcheck="false" style="display:block;width:100%;min-height:380px;padding:16px;border-radius:var(--radius-lg);background:var(--input-bg);color:var(--text);font-family:monospace;border:1px solid var(--border);resize:vertical;line-height:1.7;font-size:0.95rem;">print("Ready to judge")</textarea>
+            <div class="toolbar-row" style="margin-top:12px">
+              <span class="mini-copy" id="editor-hint">Login to submit.</span>
               <div class="toolbar-actions">
-                <button class="secondary-button compact" id="load-template" type="button" data-i18n="editor.loadTemplate">Load template</button>
-                <button class="primary-button" id="submit-code" type="button" data-i18n="editor.submit">Submit solution</button>
+                <button class="secondary-button compact" id="run-sample-btn" type="button">Run sample</button>
+                <button class="secondary-button compact" id="load-template" type="button">Template</button>
+                <button class="primary-button" id="submit-code" type="button">Submit</button>
               </div>
             </div>
+            <pre id="run-sample-output" style="display:none;min-height:32px;margin-top:8px;padding:8px;border-radius:8px;background:var(--bg-alt);font-family:monospace;font-size:0.85rem;color:var(--muted)"></pre>
             <p class="feedback" id="submit-feedback"></p>
           </article>
 

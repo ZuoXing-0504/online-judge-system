@@ -17,18 +17,16 @@ export function initSubmitPage() {
   const slugInput = document.getElementById("manual-problem-slug");
   const templateButton = document.getElementById("load-template");
   const submitButton = document.getElementById("submit-code");
-  console.log("[submit] init — templateBtn:", !!templateButton, "submitBtn:", !!submitButton, "CodeEditor:", !!window.CodeEditor, "contest:", _contestSlug);
+  const runBtn = document.getElementById("run-sample-btn");
+  const backLink = document.getElementById("back-to-problem");
 
-  if (slug && slugInput) slugInput.value = slug;
-  if (templateButton) {
-    templateButton.addEventListener("click", () => {
-      console.log("[submit] '加载模板' button CLICKED");
-      loadCodeTemplate();
-    });
-  } else {
-    console.log("[submit] WARNING: #load-template button not found in DOM");
+  if (slug && slugInput) {
+    slugInput.value = slug;
+    if (backLink) { backLink.href = `/problem?slug=${slug}`; backLink.style.display = ""; }
   }
+  if (templateButton) templateButton.addEventListener("click", () => loadCodeTemplate());
   if (submitButton) submitButton.addEventListener("click", handleSubmit);
+  if (runBtn) runBtn.addEventListener("click", runSample);
   renderSubmit();
 }
 
@@ -44,6 +42,26 @@ export function renderSubmit() {
     contestBanner.className = "status-chip warning";
     contestBanner.style.display = "";
   }
+}
+
+async function runSample() {
+  const slug = document.getElementById("manual-problem-slug")?.value.trim() || "";
+  const code = window.CodeEditor ? window.CodeEditor.getValue() : "";
+  const lang = document.getElementById("language-select-submit")?.value || "python";
+  const output = document.getElementById("run-sample-output");
+  const btn = document.getElementById("run-sample-btn");
+  if (!slug || !code.trim()) return;
+  btn.disabled = true;
+  output.style.display = "";
+  output.textContent = "Running...";
+  try {
+    const resp = await apiFetch(`/api/v1/problems/${slug}/run`, {
+      method: "POST", body: JSON.stringify({ code, language: lang }),
+    }, false);
+    output.textContent = resp.output || resp.error || "(no output)";
+    output.style.color = resp.status === "accepted" ? "var(--success)" : "var(--danger)";
+  } catch (e) { output.textContent = e.message; output.style.color = "var(--danger)"; }
+  btn.disabled = false;
 }
 
 function loadCodeTemplate() {

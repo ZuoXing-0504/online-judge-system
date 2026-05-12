@@ -27,47 +27,6 @@ export async function initProblemDetailPage() {
     state.problemStatus = null;
   }
   renderDetail();
-  initQuickSubmit();
-}
-
-function initQuickSubmit() {
-  const runBtn = document.getElementById("run-sample-btn");
-  const submitBtn = document.getElementById("quick-submit-btn");
-  const editor = document.getElementById("quick-code-editor");
-  if (!editor || !state.selectedProblem) return;
-
-  if (runBtn) {
-    runBtn.addEventListener("click", async () => {
-      const code = editor.value;
-      const output = document.getElementById("run-sample-output");
-      if (!code.trim()) return;
-      runBtn.disabled = true;
-      output.textContent = "Running...";
-      try {
-        const resp = await apiFetch(`/api/v1/problems/${state.selectedProblem.slug}/run`, {
-          method: "POST", body: JSON.stringify({ code, language: "python" }),
-        }, false);
-        output.textContent = resp.output || resp.error || "(no output)";
-        output.style.color = resp.status === "accepted" ? "var(--success)" : "var(--danger)";
-      } catch (e) { output.textContent = e.message; output.style.color = "var(--danger)"; }
-      finally { runBtn.disabled = false; }
-    });
-  }
-  if (submitBtn) {
-    submitBtn.addEventListener("click", async () => {
-      if (!isLoggedIn()) { showToast("Login to submit", "error"); return; }
-      const code = editor.value;
-      if (!code.trim()) return;
-      submitBtn.disabled = true;
-      try {
-        const resp = await apiFetch("/api/v1/submissions", {
-          method: "POST", body: JSON.stringify({ problem_slug: state.selectedProblem.slug, code, language: "python" }),
-        }, true);
-        showToast(`Submitted: ${resp.id.slice(0, 8)}`, "success");
-      } catch (e) { showToast(e.message, "error"); }
-      finally { submitBtn.disabled = false; }
-    });
-  }
 }
 
 export function renderDetail() {
